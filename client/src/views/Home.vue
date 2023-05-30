@@ -3,7 +3,7 @@
     <!-- sidebar -->
     <!-- <div class="col-lg-2 col-mid-3 col-sm-3 sidebar"> -->
     <div class="sidebar">
-      <div class="d-flex flex-column flex-shrink-0 p-2" style="background-color:#E5E8E8; height:100vh;">
+      <div class="d-flex flex-column flex-shrink-0 p-3" style="background-color:#E5E8E8; height:100vh;">
         <span class="fs-4 fw-semibold">My Workspace</span>
         <hr style="border-color:#909497">
         <form>
