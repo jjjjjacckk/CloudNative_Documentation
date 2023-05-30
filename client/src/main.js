@@ -40,6 +40,9 @@ import 'codemirror/addon/scroll/simplescrollbars.css';
 // style
 import 'codemirror/lib/codemirror.css';
 
+// diff
+import CodeDiff from 'v-code-diff'
+
 
 VMdEditor.Codemirror = Codemirror;
 
@@ -47,4 +50,4 @@ VMdEditor.use(githubTheme, {
   Hljs: hljs,
 }).lang.use('en-US', enUS);
 
-createApp(App).use(router).use(VMdEditor).mount('#app')
+createApp(App).use(router).use(VMdEditor).use(CodeDiff).mount('#app')

@@ -101,7 +101,10 @@
                     {{ item.username }}
                   </p>
                 </div> -->
-                test
+                  <code-diff
+                    :old-string="oldStr"
+                    :new-string="newStr"
+                    output-format="side-by-side"/>
               </div>
 
             </div>
@@ -139,11 +142,13 @@ export default {
           },
         },
       },
-
+      oldStr: "hihi\nvuescript",
+      newStr: "hihi\nJavaScript",
     }
   },
   setup() {
     //File data 
+
   },
   computed: {
   },
