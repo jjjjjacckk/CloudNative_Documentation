@@ -4,8 +4,8 @@ const Schema = mongoose.Schema
 const Workspace = new Schema(
     {
         name: { type: String, required: true },
-        members: { type: [String], required: true },
-        files: { type: [String], required: true },
+        members: { type: [mongoose.ObjectId], required: true },
+        files: { type: [mongoose.ObjectId], required: false },
     },
     { timestamps: true },
 )

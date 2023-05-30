@@ -1,7 +1,4 @@
 const Movie = require('../models/model')
-const User = require('../models/user')
-const File = require('../models/file')
-const Workspace = require('../models/workspace')
 
 createMovie = (req, res) => {
     const body = req.body
@@ -120,47 +117,10 @@ getMovies = async (req, res) => {
     }).catch(err => console.log(err))
 }
 
-createFile = (req, res) => {
-    const body = req.body
-
-    if (!body) {
-        return res.status(400).json({
-            //message: 'failed'
-            success: false,
-            error: 'You must provide a movie',
-        })
-    } 
-
-    const file = new File(body)
-
-    if (!file) {
-        return res.status(400).json({ /*message: 'failed'*/ success: false, error: err })
-    }
-
-    file
-        .save()
-        .then(() => {
-            return res.status(201).json({
-                //message: 'success!',
-                success: true,
-                id: file._id,
-                message: 'Movie created!',
-            })
-        })
-        .catch(error => {
-            return res.status(400).json({
-                //message: 'failed',
-                error,
-                message: 'Movie not created!',
-            })
-        })
-}
-
 module.exports = {
     createMovie,
     updateMovie,
     deleteMovie,
     getMovies,
     getMovieById,
-    createFile,
 }
