@@ -9,15 +9,28 @@
         <form>
           <input class="form-control mb-2" type="text" placeholder="Search file ..." aria-label="Search">
         </form>
-        <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';">
+        <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#aboutModal">
           <i class="fa-solid fa-lightbulb" style="width:23px"></i> About
         </button>
         <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';">
           <i class="fa-solid fa-file" style="width:23px"></i> Create a file
         </button>
-        <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';">
+        <button class="btn btn-text-color mb-1 text-start" @click="isCreate=!isCreate" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';">
           <i class="fa-solid fa-user-plus" style="width:23px"></i> Create a workspace
         </button>
+        <div v-if="isCreate" class="mx-2">
+          <div class="d-flex my-2">
+            <button class="btn btn-text-color btn-outline-dark me-3 text-nowrap my-2" @click="createWorkspaceModal=true">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+            <dropSearch class="form-control" 
+                        :options="options"
+                        :disabled="false"
+                        :placeholder="'搜尋隊伍...'"
+                        v-on:selected="validateSelection">
+            </dropSearch>
+          </div>
+        </div>
         <div class="container mt-5">
           <div class="row">
             <div class="col">
@@ -155,24 +168,35 @@
           </div>
         </div>
       </div>
+      <!-- About Modal !-->
+      <!-- Create File Modal !-->
+      <!-- Create Workspace Modal ! -->
     </div>
-    <!-- About Modal !-->
-    <!-- Create File Modal !-->
-    <!-- Create Workspace Modal !-->
-    <!-- <div class="mx-2">
-      <div class="d-flex my-2">
-        <button class="btn btn-text-color btn-outline-dark me-3 text-nowrap my-2" @click="createWorkspaceModal=true">
-          <i class="fa-solid fa-plus"></i>
-        </button>
-        <dropSearch class="form-control" 
-                    :options="options"
-                    :disabled="false"
-                    :placeholder="'搜尋隊伍...'"
-                    v-on:selected="validateSelection">
-        </dropSearch>
+
+    <div id="aboutModal" class="modal" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">About</h4>
+            <!-- <button type="button" class="btn-close" @click="aboutModal=false"></button> -->
+            <button type="button" class="close" data-bs-dismiss="modal">&times</button>
+          </div>
+          <!-- <div v-if="errorMessage !== ''" class="alert alert-danger mx-4" role="alert">
+            <span>{{ errorMessage }}</span>
+          </div> -->
+          <div class="modal-body">
+            test
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
       </div>
-    </div> -->
+    </div>
+
   </div>
+
+
 </template>
 
 <script>
@@ -185,6 +209,7 @@ export default{
     return {
       createWorkspaceModal: false,
       isOwner: true,
+      isCreate: false,
     }
   },
   setup(){
@@ -253,4 +278,5 @@ export default{
   min-width: 0; /* Ensure minimum width for grid item */
   overflow: hidden; /* Hide overflowing text */
 }
+
 </style>

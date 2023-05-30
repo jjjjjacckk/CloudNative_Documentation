@@ -11,7 +11,10 @@
       </div>
     </div>
     <div style="grid-column:2;">
-      <span class="navbar-brand ms-4 fs-5 fw-bold text-truncate" style="color:#2c3e50">File1</span>
+      <input v-if="isEdit" type="text" placeholder="filename" v-model="filename" >
+      <span v-else class="navbar-brand ms-4 fs-5 fw-bold text-truncate" style="color:#2c3e50">{{ filename }}</span>
+      <button class="btn btn-save my-2" @click="isEdit = !isEdit"><i class="fa-solid fa-pencil"></i></button>
+      
     </div>
     <div class="d-flex justify-content-between ps-3 pe-2 text-nowrap" style="grid-column:3;">
       <button class="btn btn-save my-2"><i class="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save</button>
@@ -38,9 +41,11 @@
 export default {
   data(){
     return{
+      filename: 'File1',
       markdown: '',
       // mode: "editable",
       editMode: true,
+      isEdit: false,
       toolbar: {
         tagBar: {
           title: 'tag',
@@ -58,7 +63,12 @@ export default {
           },
         },
       },
+
     }
+  },
+  setup() {
+    //filename
+    //markdown
   },
   computed: {
   },
