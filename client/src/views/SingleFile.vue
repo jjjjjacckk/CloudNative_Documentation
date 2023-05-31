@@ -5,19 +5,20 @@
       <router-link to="/home" class="btn d-flex align-items-center fs-5 px-0 fw-bolder ms-2 text-nowrap" style="color:#2c3e50">
         <i class="fa-solid fa-file-lines fs-4" style="color:#2c3e50"></i>&nbsp;&nbsp;My Workspace
       </router-link>
-      <div class="btn-group btn-group-sm my-2" role="group">
+      <div class="btn-group btn-group-sm my-2 mx-3" role="group">
         <button class="btn btn-mode" :class="{ 'active': editMode }"  @click="editMode=true"><i class="fa-solid fa-eye" style="width:15px"></i></button>
         <button class="btn btn-mode" :class="{ 'active': !editMode }" @click="editMode=false"><i class="fa-solid fa-table-columns" style="width:15px"></i></button>
       </div>
     </div>
     <div style="grid-column:2;">
-      <input v-if="isEdit" type="text" placeholder="filename" v-model="filename" >
-      <span v-else class="navbar-brand ms-4 fs-5 fw-bold text-truncate" style="color:#2c3e50">{{ filename }}</span>
-      <button class="btn btn-save my-2" @click="isEdit = !isEdit"><i class="fa-solid fa-pencil"></i></button>
-      
+      <div class="d-flex justify-content-center align-items-center">
+        <span v-if="!isEdit" class="navbar-brand ms-4 fs-5 fw-bold" style="color:#2c3e50">{{ filename }}</span>
+        <input v-else class="form-control inline" type="text" placeholder="filename" v-model="filename" >
+        <button class="btn my-2" style="color:#2c3e50" @click="isEdit = !isEdit"><i class="fa-solid fa-pencil"></i></button>
+      </div>
     </div>
-    <div class="d-flex justify-content-between ps-3 pe-2 text-nowrap" style="grid-column:3;">
-      <button class="btn btn-save my-2"><i class="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save</button>
+    <div class="d-flex justify-content-end ps-3 pe-2 text-nowrap" style="grid-column:3;">
+      <button class="btn btn-save my-2 mx-3"><i class="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save</button>
       <div class="d-flex justify-content-between">
         <span data-bs-toggle="modal" data-bs-target="#historyModal">
           <button class="btn btn-others my-2" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Page history"><i class="fa-solid fa-clock-rotate-left"></i></button>
@@ -43,7 +44,7 @@
   <div id="snapshotModal" class="modal fade" role="dialog">
       <div class="modal-mask">
         <div class="modal-wrapper">
-          <div class="modal-dialog">
+          <div class="modal-dialog modal-xl">
             <div class="modal-content" style="height:80vh; width:100%">
               <div class="modal-header">
                 <h4 class="modal-title">Snapshot</h4>
@@ -84,11 +85,11 @@
       </div>
     </div>
     
-    <!-- Snapshot Modal !-->
+    <!-- History Modal !-->
     <div id="historyModal" class="modal fade" role="dialog">
       <div class="modal-mask">
         <div class="modal-wrapper">
-          <div class="modal-dialog">
+          <div class="modal-dialog modal-xl">
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title">History</h4>

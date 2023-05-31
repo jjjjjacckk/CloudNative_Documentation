@@ -4,13 +4,13 @@
     <!-- <div class="col-lg-2 col-mid-3 col-sm-3 sidebar"> -->
     <div class="sidebar">
       <div class="d-flex flex-column flex-shrink-0 p-3" style="background-color:#E5E8E8; height:100vh;">
-        <span class="fs-4 fw-semibold">My Workspace</span>
+        <span class="fs-4 fw-semibold text-truncate">My Workspace</span>
         <hr style="border-color:#909497">
         <form>
           <input class="form-control mb-2" type="text" placeholder="Search file ..." aria-label="Search">
         </form>
         <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#aboutModal">
-          <i class="fa-solid fa-lightbulb" style="width:23px"></i> About Workspace
+          <i class="fa-solid fa-lightbulb" style="width:23px"></i> About
         </button>
         <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#fileModal">
           <i class="fa-solid fa-file" style="width:23px"></i> Create File
@@ -58,13 +58,13 @@
               Groups
             </button>
             <div class="collapse" id="groups-collapse">    
-              <div class="list-group" style="height: 18vh;overflow-y: auto;">
-                <button class="btn btn-text-color btn-workspace btn-block m-1">Group1</button>
-                <button class="btn btn-text-color btn-workspace btn-block m-1">Group2</button>
-                <button class="btn btn-text-color btn-workspace btn-block m-1">Group3</button>
-                <button class="btn btn-text-color btn-workspace btn-block m-1">Group4</button>
-                <button class="btn btn-text-color btn-workspace btn-block m-1">Group5</button>
-                <button class="btn btn-text-color btn-workspace btn-block m-1">Group6</button>
+              <div class="list-group text-truncate" style="height: 18vh;overflow-y: auto;">
+                <button class="btn btn-text-color btn-workspace btn-block m-1"><div class="text-truncate">Group1</div></button>
+                <button class="btn btn-text-color btn-workspace btn-block m-1"><div class="text-truncate">Group2</div></button>
+                <button class="btn btn-text-color btn-workspace btn-block m-1"><div class="text-truncate">Group3</div></button>
+                <button class="btn btn-text-color btn-workspace btn-block m-1"><div class="text-truncate">Group4</div></button>
+                <button class="btn btn-text-color btn-workspace btn-block m-1"><div class="text-truncate">Group5</div></button>
+                <button class="btn btn-text-color btn-workspace btn-block m-1"><div class="text-truncate">Group6</div></button>
               </div>
             </div>
           </div>
@@ -169,7 +169,8 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h4 class="modal-title">About Workspace</h4>
+                <h4 class="modal-title fw-bolder"><i class="fa-solid fa-lightbulb"></i>&nbsp;&nbsp;About</h4>
+                <span class="badge bg-warning d-flex align-items-center mx-3">{{ MemberNum }}</span>
                 <button class="btn btn-close" data-bs-dismiss="modal"></button>
               </div>
 
@@ -179,18 +180,38 @@
                     {{ item.username }}
                   </p>
                 </div> -->
-                <div class="list-group" style="height: 18vh;overflow-y: auto;">
-                  <button class="btn btn-text-color btn-workspace btn-block m-1">Group1</button>
-                  <button class="btn btn-text-color btn-workspace btn-block m-1">Group2</button>
-                  <button class="btn btn-text-color btn-workspace btn-block m-1">Group3</button>
-                  <button class="btn btn-text-color btn-workspace btn-block m-1">Group4</button>
-                  <button class="btn btn-text-color btn-workspace btn-block m-1">Group5</button>
-                  <button class="btn btn-text-color btn-workspace btn-block m-1">Group6</button>
+                <div class="card-body text-start">
+                  <div class="list-group px-3" style="height: 18vh; overflow-y:scroll; color:#2c3e50">
+                    <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
+                      <span class="fw-bolder fs-5" style="color:#2c3e50"> user 1</span>
+                      <span class="badge bg-success d-flex align-items-center my-1">Admin</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
+                      <span class="fw-bolder fs-5" style="color:#2c3e50"> user 2</span>
+                      <span class="badge bg-primary d-flex align-items-center my-1">Member</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
+                      <span class="fw-bolder fs-5" style="color:#2c3e50"> user 3</span>
+                      <span class="badge bg-primary d-flex align-items-center my-1">Member</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
+                      <span class="fw-bolder fs-5" style="color:#2c3e50"> user 4</span>
+                      <span class="badge bg-primary d-flex align-items-center my-1">Member</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
+                      <span class="fw-bolder fs-5" style="color:#2c3e50"> user 5</span>
+                      <span class="badge bg-primary d-flex align-items-center my-1">Member</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
+                      <span class="fw-bolder fs-5" style="color:#2c3e50"> user 6</span>
+                      <span class="badge bg-primary d-flex align-items-center my-1">Member</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div class="modal-footer">
-                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Leave</button>
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Leave</button>
               </div>
             </div>
           </div>
@@ -205,25 +226,37 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h4 class="modal-title">Create File</h4>
+                <h4 class="modal-title fw-bolder"><i class="fa-solid fa-file"></i>&nbsp;&nbsp;Create File</h4>
                 <button class="btn btn-close" data-bs-dismiss="modal"></button>
               </div>
 
-              <div class="modal-body">
-                <div class="row">
+              <div class="modal-body">               
+                <div class="d-flex gap-3 mb-3">
                   <div class="col">
-                    <span>Filename: </span>
+                    <label>FileName</label>
+                    <input type="text" class="form-control" v-model="filename"/>
                   </div>
                   <div class="col">
-                    <input type="text" placeholder="Filename" v-model="filename" >
+                    <label>Add tags</label>
+                    <select class="form-select" v-model="selectedTags">
+                      <option value="" selected disabled>select</option>
+                      <option value="none">None</option>
+                      <option value="tag1">Tag1</option>
+                      <option value="tag2">Tag2</option>
+                    </select>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col">
-                    <span>Tags: </span>
-                  </div>
-                  <div class="col">
-                    <input type="text" placeholder="Tag" v-model="tag" >
+
+                <div class="form-group">
+                  <label>Added Tags</label>
+                </div>
+                <div class="card-body">
+                  <div class="container">
+                    <div class="list-group my-2" style="height: 12vh; overflow-y:scroll;">
+                      <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
+                        <span class="fw-bolder" style="color:#2c3e50"> tag1</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -336,6 +369,7 @@ export default{
     return {
       createWorkspaceModal: false,
       isOwner: true,
+      MemberNum: 6,
     }
   },
   setup() {
@@ -428,5 +462,10 @@ export default{
     overflow-y: auto;
     word-wrap:break-word
 } */
+.owner {
+  background-color: #90be6d;
+  margin: 1px;
+  text-align: center;
+}
 
 </style>
