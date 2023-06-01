@@ -20,6 +20,7 @@ router.get('/getUserName/:id', User.getUserName)
 
 router.post('/createWorkspace', Workspace.createWorkspace)
 router.get('/getWorkspace/:id', Workspace.getWorkspace)
+router.get('/getWorkspaceTags/:id', Workspace.getWorkspaceTags)
 router.get('/leaveWorkspace/:id', Workspace.leaveWorkspace)
 
 module.exports = router

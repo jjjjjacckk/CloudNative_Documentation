@@ -3,7 +3,7 @@ const User = require('../models/user')
 
 createWorkspace = async (req, res) => { 
     const body = req.body
-    // const body = {name: 'new1', members: '647632c9ae2457001ac7b9c0'}
+    // const body = {name: 'new3', members: '647632c9ae2457001ac7b9c0', tags: {tag: "abc", number: 2}}
 
     if (!body) {
         console.count('error: ' + 'You must provide a workspace')
@@ -66,6 +66,23 @@ getWorkspace = async (req, res) => {
     }
 }
 
+getWorkspaceTags = async (req, res) => {
+
+    try {
+        const workspace = await Workspace.findOne({ _id: req.params.id})
+
+        if (!workspace) {
+            console.count('error: ' + 'Workspace not found');
+            return res.status(403).json({ data: '' })
+        }
+
+        return res.status(200).json({ data: workspace.tags })
+    } catch (error) {
+        console.count('error: ' + error)
+        return res.status(400).json({ data: '' })
+    }
+}
+
 leaveWorkspace = async (req, res) => {
     const body = req.body
     const uid = body.id
@@ -91,14 +108,13 @@ leaveWorkspace = async (req, res) => {
             return res.status(403).json({ message: 'failed' })
         }
 
-        workspace.save()
-
         if (user.workspace.pull(req.params.id)) {
             console.count('error: ' + 'workspace not in user');
             return res.status(403).json({ message: 'failed' })
         }
 
-        user.save()
+        await workspace.save()
+        await user.save()
 
         return res.status(200).json({ message: 'success' })
     } catch (error) {
@@ -110,5 +126,6 @@ leaveWorkspace = async (req, res) => {
 module.exports = {
     createWorkspace,
     getWorkspace,
+    getWorkspaceTags,
     leaveWorkspace,
 }
