@@ -1,10 +1,10 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.js'
-import 'bootstrap/js/dist/tab' // for nab tab
-import 'bootstrap/js/dist/modal' // for modal
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/js/bootstrap.bundle.js'
+// import 'bootstrap/js/dist/tab' // for nab tab
+// import 'bootstrap/js/dist/modal' // for modal
 
 import VMdEditor from '@kangc/v-md-editor/lib/codemirror-editor';
 import '@kangc/v-md-editor/lib/style/codemirror-editor.css';
@@ -40,6 +40,9 @@ import 'codemirror/addon/scroll/simplescrollbars.css';
 // style
 import 'codemirror/lib/codemirror.css';
 
+// diff
+import CodeDiff from 'v-code-diff'
+
 
 VMdEditor.Codemirror = Codemirror;
 
@@ -47,4 +50,4 @@ VMdEditor.use(githubTheme, {
   Hljs: hljs,
 }).lang.use('en-US', enUS);
 
-createApp(App).use(router).use(VMdEditor).mount('#app')
+createApp(App).use(router).use(VMdEditor).use(CodeDiff).mount('#app')
