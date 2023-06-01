@@ -5,15 +5,15 @@ const File = new Schema(
     {
         name: { type: String, required: true },
         tag: { type: [String], required: true },
-        owner: { type: String, required: true },
+        owner: { type: mongoose.ObjectId, required: true },
         data: { type: String, required: false },
         history: [{
-            user_id: { type: String, required: false },
-            time: { type: [String], required: false },
+            user_id: { type: mongoose.ObjectId, required: false },
+            time: { type: String, required: false },
             plain_text: { type: String, required: false },
         }],
         snapshot: [{
-            time: { type: [String], required: false },
+            time: { type: String, required: false },
             plain_text: { type: String, required: false },
         }],
     },

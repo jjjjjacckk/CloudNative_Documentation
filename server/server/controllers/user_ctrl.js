@@ -28,8 +28,6 @@ createUser = async (req, res) => { // need create workspace
           console.count('error: ' + 'account exist')
           return res.status(400).json({ message: 'account exist' })
         }
-    
-        await user.save()
 
         const workspace_input = { name: user.username, members: user._id}
 
@@ -41,6 +39,10 @@ createUser = async (req, res) => { // need create workspace
         }
 
         await workspace.save()
+
+        user.workspace.push(workspace._id)
+
+        await user.save()
 
         return res.status(201).json({
           message: 'success',
