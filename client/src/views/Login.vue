@@ -48,20 +48,6 @@ export default{
       // allUser: [],
     }
   },
-  setup(){
-    // // get all user
-    // this.$http.get(this.db + 'auth.json').then(function(data){
-    //   return data.json();
-    // }).then(function(data){
-    //   var userArr = [];
-    //   for(let key in data){
-    //     data[key].id = key;
-    //     userArr.push(data[key]);
-    //   }
-    //   this.allUser = userArr;
-    //   // console.log(this.allUser);
-    // })
-  },
   methods: {
     // loginRequest(){
     //   this.errorMessage = '';
@@ -86,6 +72,20 @@ export default{
     //     }
     //   }
     // },
+  },
+  setup(){
+    // // get all user
+    // this.$http.get(this.db + 'auth.json').then(function(data){
+    //   return data.json();
+    // }).then(function(data){
+    //   var userArr = [];
+    //   for(let key in data){
+    //     data[key].id = key;
+    //     userArr.push(data[key]);
+    //   }
+    //   this.allUser = userArr;
+    //   // console.log(this.allUser);
+    // })
   },
 }
 </script>

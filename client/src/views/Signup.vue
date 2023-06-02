@@ -26,10 +26,10 @@
             </div>
             <div class="col-sm-10 mb-4 form-group">
               <label class="fs-5 mb-1" for="password">name</label>
-              <input type="text" id="text" v-model="user.name" class="form-control form-control-lg">
+              <input type="text" id="text" v-model="user.username" class="form-control form-control-lg">
             </div>
             <div class="col-sm-12 mb-4 form-group">
-              <button :disabled="user.account == '' || user.password == '' || user.name == ''" @click.prevent="signupRequest" class="btn btn-success btn-lg col-sm-4">Signup</button>
+              <button :disabled="user.account == '' || user.password == '' || user.username == ''" @click.prevent="newUser" class="btn btn-success btn-lg col-sm-4">Signup</button>
             </div>
             <div class="col-sm-12 form-group">
               <p>Already have an account? <router-link to="/">Login</router-link></p>
@@ -42,65 +42,90 @@
 </template>
 
 <script>
+import { ref, reactive } from 'vue'
 
 export default{
-  data() {
-    return {
-      user: {
+  // data() {
+  //   return {
+  //     user: {
+  //       account: '',
+  //       password: '',
+  //       name: '',
+  //     },
+  //     errorMessage: '',
+  //     successMessage: '',
+  //     // allUser: [],
+  //     // db: 'https://volleague-default-rtdb.firebaseio.com/',
+  //     // SingleProfile: {
+  //     //   authid: '',
+  //     //   name: 'User',
+  //     //   birthday: {
+  //     //     year: 'yyyy',
+  //     //     month: 'mm',
+  //     //     day: 'dd',
+  //     //   },
+  //     //   position: ['OH'],
+  //     //   teamList: [''],
+  //     //   StatisticsList: [''],
+  //     // }
+  //   }
+  // },
+  // methods: {
+  //   // signupRequest() {
+  //   //   this.errorMessage = '';
+  //   //   this.successMessage = '';
+  //   //   if(this.allUser.find(element => element.account == this.user.account)){
+  //   //     this.errorMessage = '這個帳號已被使用!';
+  //   //   }else{
+  //   //     this.successMessage = '註冊成功!';
+  //   //     // create auth
+  //   //     this.$http.post(this.db + 'auth.json', this.user).then(function(data){
+  //   //       this.SingleProfile.authid = data.body.name;
+  //   //       this.$http.post(this.db + 'user.json',this.SingleProfile).then(function(data){
+  //   //         console.log(data);
+  //   //       });
+          
+  //   //     })
+  //   //   }
+  //   // }
+  // },
+  setup() {
+    const user = ref(
+      {
         account: '',
         password: '',
-        name: '',
-      },
-      errorMessage: '',
-      successMessage: '',
-      // allUser: [],
-      // db: 'https://volleague-default-rtdb.firebaseio.com/',
-      // SingleProfile: {
-      //   authid: '',
-      //   name: 'User',
-      //   birthday: {
-      //     year: 'yyyy',
-      //     month: 'mm',
-      //     day: 'dd',
-      //   },
-      //   position: ['OH'],
-      //   teamList: [''],
-      //   StatisticsList: [''],
-      // }
+        username: '',
+      })
+    const errorMessage = ref('')
+    const successMessage = ref('')
+
+
+    const newUser = () => { 
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+          // "auth-token": state.token
+        },
+        body: JSON.stringify({
+          account: user.value.account,
+          password: user.value.password,
+          username: user.value.username,
+        }) 
+      }
+      
+      fetch("http://localhost:8081/newUser", requestOptions)
+        .then(res => { 
+          // successMessage.value = JSON.parse(res).data
+          console.log(res);
+        })
+        .catch(res => { 
+          // errorMessage.value = JSON.parse(res).data
+          console.log(res);
+        })
     }
-  },
-  setup() {
-    // // get all user
-    // this.$http.get(this.db + 'auth.json').then(function(data){
-    //   return data.json();
-    // }).then(function(data){
-    //   var userArr = [];
-    //   for(let key in data){
-    //     data[key].id = key;
-    //     userArr.push(data[key]);
-    //   }
-    //   this.allUser = userArr;
-    //   // console.log(this.allUser);
-    // })
-  },
-  methods: {
-    // signupRequest() {
-    //   this.errorMessage = '';
-    //   this.successMessage = '';
-    //   if(this.allUser.find(element => element.account == this.user.account)){
-    //     this.errorMessage = '這個帳號已被使用!';
-    //   }else{
-    //     this.successMessage = '註冊成功!';
-    //     // create auth
-    //     this.$http.post(this.db + 'auth.json', this.user).then(function(data){
-    //       this.SingleProfile.authid = data.body.name;
-    //       this.$http.post(this.db + 'user.json',this.SingleProfile).then(function(data){
-    //         console.log(data);
-    //       });
-          
-    //     })
-    //   }
-    // }
+  
+    return { user, successMessage, errorMessage, newUser }
   },
 }
 </script>
