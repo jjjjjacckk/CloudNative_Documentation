@@ -15,15 +15,15 @@
           <div class="row justify-content-center">
             <div class="col-sm-10 mb-4 form-group">
               <label class="fs-5 mb-1" for="account">account</label>
-              <input type="text" id="account" v-model="user.account" class="form-control form-control-lg">
+              <input type="text" id="account" v-model="loginUser.account" class="form-control form-control-lg">
             </div>
             <div class="col-sm-10 mb-4 form-group">
               <label class="fs-5 mb-1" for="password">password</label>
-              <input type="password" id="password" v-model="user.password" class="form-control form-control-lg">
+              <input type="password" id="password" v-model="loginUser.password" class="form-control form-control-lg">
             </div>
             <div class="col-sm-12 mb-4 form-group">
               <!-- <button :disabled="user.account == '' || user.password == ''" @click.prevent="loginRequest" class="btn btn-primary btn-lg col-sm-4">登入</button> -->
-              <button :disabled="user.account == '' || user.password == ''" @click.prevent="getUser" class="btn btn-primary btn-lg col-sm-4">Login</button>
+              <button :disabled="loginUser.account == '' || loginUser.password == ''" @click.prevent="checkUser(loginUser.account, loginUser.password)" class="btn btn-primary btn-lg col-sm-4">Login</button>
             </div>
             <div class="col-sm-12 form-group">
             <p>Don't have an account? <router-link to="/signup">Signup</router-link></p>
@@ -37,7 +37,8 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRoute , useRouter } from 'vue-router'
 
 export default{
   // data() {
@@ -76,7 +77,7 @@ export default{
   //   // },
   // },
   setup(){
-    const user = ref(
+    const loginUser = ref(
       {
         account: '',
         password: '',
@@ -84,34 +85,49 @@ export default{
       })
     const errorMessage = ref('')
     const successMessage = ref('')
+    const AllUser = ref([])
+    const router = useRouter();
 
-
-    const getUser = () => { 
-      const requestOptions = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-          // "auth-token": state.token
-        },
-        body: JSON.stringify({
-          account: user.value.account,
-          password: user.value.password,
-        }),
+    const getAllUser = async() => {
+      try {
+        await fetch("http://localhost:3080/api/getAllUsers")
+        .then(res => res.json())
+        .then(res => {
+          // console.log(res.data)
+          AllUser.value = res.data
+          // debugger
+        })
       }
-      
+      catch(error) {
+        console.log(error) // do different error to showcase - line 15 wrong name + line13 with incorrect path
+      }
+    }
+
+    onMounted(() => {
+      getAllUser()
+    })
+
+    const checkUser = (acc, passwd) => {
     
-      // fetch("http://localhost:3080/api/getUserID", requestOptions)
-      //   .then(res => {
-      //     res.json().then(data => { successMessage.value = data.message } )
-      //   })
-      //   .catch(err => {
-      //     err.json().then(data => { errorMessage.value = data.message } )
-      //   })
-      fetch("http://localhost:3080/api/getUserID", requestOptions)
-      .then(res => res.json).then(data => console.log(data))
+      var matchAcc = AllUser.value.find(element => element.account == loginUser.value.account);
+      if(matchAcc == undefined){
+        errorMessage.value = 'account not exist';
+      } else{
+        if(matchAcc.password == loginUser.value.password){
+          errorMessage.value = '';
+          console.log('success');
+
+          var authID = matchAcc._id;
+          router.push('/home/' + authID);
+        } else{
+          errorMessage.value = 'wrong password';
+        }
+      }
+
     }
   
-    return { user, successMessage, errorMessage, getUser }
+  
+    return { loginUser, successMessage, errorMessage, getAllUser, checkUser }
   },
 }
 </script>

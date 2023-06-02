@@ -11,7 +11,7 @@ const corsOptions = {
   };
 
 const db = require('./db')
-const movieRouter = require('./routes/router')
+const Router = require('./routes/router')
 
 const app = express()
 
@@ -25,6 +25,6 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
-app.use('/api', movieRouter)
+app.use('/api', Router)
 
 module.exports = app;

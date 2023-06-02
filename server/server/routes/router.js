@@ -1,20 +1,20 @@
 const express = require('express')
 
-const Ctrl = require('../controllers/ctrl')
+// const Ctrl = require('../controllers/ctrl')
 const User = require('../controllers/user_ctrl')
 const File = require('../controllers/file_ctrl')
 const Workspace = require('../controllers/workspace_ctrl')
 
 const router = express.Router()
 
-router.post('/movie', Ctrl.createMovie)
-router.put('/movie/:id', Ctrl.updateMovie)
-router.delete('/movie/:id', Ctrl.deleteMovie)
-router.get('/movie/:id', Ctrl.getMovieById)
-router.get('/movies', Ctrl.getMovies)
+// router.post('/movie', Ctrl.createMovie)
+// router.put('/movie/:id', Ctrl.updateMovie)
+// router.delete('/movie/:id', Ctrl.deleteMovie)
+// router.get('/movie/:id', Ctrl.getMovieById)
+// router.get('/movies', Ctrl.getMovies)
 
 router.post('/newUser', User.createUser)
-router.get('/getUserID', User.getUserID)
+router.get('/getAllUsers', User.getAllUsers)
 router.get('/getUserInfo/:id', User.getUserInfo)
 router.get('/getUserName/:id', User.getUserName)
 

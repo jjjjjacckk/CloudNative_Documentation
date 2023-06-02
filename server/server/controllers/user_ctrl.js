@@ -55,30 +55,18 @@ createUser = async (req, res) => { // need create workspace
       }
 }
 
-getUserID = async (req, res) => {
-    //const { account, password } = req.body
-    const body = req.body
-    const account = body.account
-    const password = body.password
-
-    try {
-        const user = await User.findOne({ account: account})
-
-        if (!user) {
-            console.count('error: ' + 'Account not found');
-            return res.status(403).json({ message: 'Account not found' })
+getAllUsers = async (req, res) => {
+    await User.find({}, (err, AllUser) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
         }
-
-        if (user.password !== password) {
-            console.count('error: ' + 'Wrong password');
-            return res.status(401).json({ message: 'Wrong password' })
+        if (!AllUser.length) {
+            return res
+                .status(404)
+                .json({ success: false, error: `User not found` })
         }
-
-        return res.status(200).json({ userID: user._id })
-    } catch (error) {
-        console.count('error: ' + error)
-        return res.status(400).json({ message: error })
-    }
+        return res.status(200).json({ success: true, data: AllUser })
+    }).catch(err => console.log(err))
 }
 
 getUserInfo = async (req, res) => {
@@ -117,7 +105,7 @@ getUserName = async (req, res) => {
 
 module.exports = {
     createUser,
-    getUserID,
+    getAllUsers,
     getUserInfo,
     getUserName,
 }
