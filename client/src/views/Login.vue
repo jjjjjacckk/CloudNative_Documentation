@@ -23,7 +23,7 @@
             </div>
             <div class="col-sm-12 mb-4 form-group">
               <!-- <button :disabled="user.account == '' || user.password == ''" @click.prevent="loginRequest" class="btn btn-primary btn-lg col-sm-4">登入</button> -->
-              <button :disabled="user.account == '' || user.password == ''" class="btn btn-primary btn-lg col-sm-4">Login</button>
+              <button :disabled="user.account == '' || user.password == ''" @click.prevent="getUser" class="btn btn-primary btn-lg col-sm-4">Login</button>
             </div>
             <div class="col-sm-12 form-group">
             <p>Don't have an account? <router-link to="/signup">Signup</router-link></p>
@@ -37,55 +37,81 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default{
-  data() {
-    return {
-      user: {
+  // data() {
+  //   return {
+  //     user: {
+  //       account: '',
+  //       password: '',
+  //     },
+  //     errorMessage: '',
+  //     // allUser: [],
+  //   }
+  // },
+  // methods: {
+  //   // loginRequest(){
+  //   //   this.errorMessage = '';
+  //   //   var matchAcc = this.allUser.find(element => element.account == this.user.account);
+  //   //   if(matchAcc == undefined){
+  //   //     this.errorMessage = '沒有這個使用者!';
+  //   //   }else{
+  //   //     if(matchAcc.password == this.user.password){
+  //   //       this.errorMessage = '';
+  //   //       var authID = matchAcc.id;
+  //   //       this.$http.get(this.db + 'user.json').then(function(data){
+  //   //         return data.json();
+  //   //       }).then(function(data){
+  //   //         for(let userID in data){
+  //   //           if(data[userID].authid == authID){
+  //   //             this.$router.push('/home/' + userID);
+  //   //           }
+  //   //         }
+  //   //       })
+  //   //     }else{
+  //   //       this.errorMessage = '密碼錯誤!';
+  //   //     }
+  //   //   }
+  //   // },
+  // },
+  setup(){
+    const user = ref(
+      {
         account: '',
         password: '',
-      },
-      errorMessage: '',
-      // allUser: [],
+        username: '',
+      })
+    const errorMessage = ref('')
+    const successMessage = ref('')
+
+
+    const getUser = () => { 
+      const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+          // "auth-token": state.token
+        },
+        body: JSON.stringify({
+          account: user.value.account,
+          password: user.value.password,
+        }),
+      }
+      
+    
+      // fetch("http://localhost:3080/api/getUserID", requestOptions)
+      //   .then(res => {
+      //     res.json().then(data => { successMessage.value = data.message } )
+      //   })
+      //   .catch(err => {
+      //     err.json().then(data => { errorMessage.value = data.message } )
+      //   })
+      fetch("http://localhost:3080/api/getUserID", requestOptions)
+      .then(res => res.json).then(data => console.log(data))
     }
-  },
-  methods: {
-    // loginRequest(){
-    //   this.errorMessage = '';
-    //   var matchAcc = this.allUser.find(element => element.account == this.user.account);
-    //   if(matchAcc == undefined){
-    //     this.errorMessage = '沒有這個使用者!';
-    //   }else{
-    //     if(matchAcc.password == this.user.password){
-    //       this.errorMessage = '';
-    //       var authID = matchAcc.id;
-    //       this.$http.get(this.db + 'user.json').then(function(data){
-    //         return data.json();
-    //       }).then(function(data){
-    //         for(let userID in data){
-    //           if(data[userID].authid == authID){
-    //             this.$router.push('/home/' + userID);
-    //           }
-    //         }
-    //       })
-    //     }else{
-    //       this.errorMessage = '密碼錯誤!';
-    //     }
-    //   }
-    // },
-  },
-  setup(){
-    // // get all user
-    // this.$http.get(this.db + 'auth.json').then(function(data){
-    //   return data.json();
-    // }).then(function(data){
-    //   var userArr = [];
-    //   for(let key in data){
-    //     data[key].id = key;
-    //     userArr.push(data[key]);
-    //   }
-    //   this.allUser = userArr;
-    //   // console.log(this.allUser);
-    // })
+  
+    return { user, successMessage, errorMessage, getUser }
   },
 }
 </script>

@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 
 export default{
   // data() {
@@ -101,6 +101,7 @@ export default{
 
 
     const newUser = () => { 
+      
       const requestOptions = {
         method: "POST",
         headers: {
@@ -112,13 +113,15 @@ export default{
           password: user.value.password,
           username: user.value.username,
         }),
-        mode: "cors",
       }
       
-      
       fetch("http://localhost:3080/api/newUser", requestOptions)
-        .then(res => res.json()).then(data => console.log(data.message))
-        // .catch(err => err.json()).then(data => console.log(data))
+        .then(res => {
+          res.json().then(data => { successMessage.value = data.message } )
+        })
+        .catch(err => {
+          err.json().then(data => { errorMessage.value = data.message } )
+        })
     }
   
     return { user, successMessage, errorMessage, newUser }
