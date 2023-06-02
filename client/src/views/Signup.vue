@@ -111,18 +111,13 @@ export default{
           account: user.value.account,
           password: user.value.password,
           username: user.value.username,
-        }) 
+        }),
+        mode: "cors",
       }
       
-      fetch("http://localhost:8081/newUser", requestOptions)
-        .then(res => { 
-          // successMessage.value = JSON.parse(res).data
-          console.log(res);
-        })
-        .catch(res => { 
-          // errorMessage.value = JSON.parse(res).data
-          console.log(res);
-        })
+      fetch("http://localhost:3080/api/newUser", requestOptions)
+        .then(res => res.json()).then(data => console.log(data.message))
+        .catch(err => err.json()).then(data => console.log(data.message))
     }
   
     return { user, successMessage, errorMessage, newUser }
