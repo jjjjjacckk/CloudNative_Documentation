@@ -115,9 +115,10 @@ export default{
         mode: "cors",
       }
       
+      
       fetch("http://localhost:3080/api/newUser", requestOptions)
         .then(res => res.json()).then(data => console.log(data.message))
-        .catch(err => err.json()).then(data => console.log(data.message))
+        // .catch(err => err.json()).then(data => console.log(data))
     }
   
     return { user, successMessage, errorMessage, newUser }
