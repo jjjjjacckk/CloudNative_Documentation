@@ -64,8 +64,7 @@ createFile = async (req, res) => {
     }
 }
 deleteFile = async (req, res) => {
-    const body = req.body;
-    const file_id = body.file_id;
+    const file_id = await File.findOne({ _id: req.params.id })
     //const file_id = '64789ff2f5a262001a8fb365'
 
     try {
@@ -110,8 +109,7 @@ deleteFile = async (req, res) => {
 };
 
 getFileInfo = async (req, res) => {
-    const body = req.body;
-    const file_id = body.file_id;
+    const file_id = await File.findOne({ _id: req.params.id })
     //const file_id = '6478a725732d8d00131eb1cf'
     try {
         const file = await File.findOne({ _id: file_id })
@@ -136,8 +134,7 @@ getFileInfo = async (req, res) => {
 }
 
 getFile = async (req, res) => {
-    const body = req.body;
-    const file_id = body.file_id;
+    const file_id = await File.findOne({ _id: req.params.id })
     //const file_id = '6478a725732d8d00131eb1cf'
     try {
         const file = await File.findOne({ _id: file_id })
