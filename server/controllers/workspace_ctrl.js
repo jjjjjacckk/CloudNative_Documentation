@@ -156,10 +156,25 @@ joinWorkspace = async (req, res) => {
     }
 }
 
+getAllWorkspace = async (req, res) => {
+    await Workspace.find({}, (err, AllWorkspace) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+        if (!AllWorkspace.length) {
+            return res
+                .status(404)
+                .json({ success: false, error: `Workspace not found` })
+        }
+        return res.status(200).json({ success: true, data: AllWorkspace })
+    }).catch(err => console.log(err))
+}
+
 module.exports = {
     createWorkspace,
     getWorkspace,
     getWorkspaceTags,
     leaveWorkspace,
     joinWorkspace,
+    getAllWorkspace,
 }

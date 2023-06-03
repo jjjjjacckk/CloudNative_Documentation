@@ -23,6 +23,7 @@ router.get('/getWorkspace/:id', Workspace.getWorkspace)
 router.get('/getWorkspaceTags/:id', Workspace.getWorkspaceTags)
 router.put('/leaveWorkspace/:id', Workspace.leaveWorkspace)
 router.put('/joinWorkspace/:id', Workspace.joinWorkspace)
+router.get('/getAllWorkspace', Workspace.getAllWorkspace)
 
 router.post('/createFile', File.createFile)
 router.delete('/deleteFile/:id', File.deleteFile)
