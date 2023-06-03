@@ -73,7 +73,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <span>
               <i class="fa-solid fa-user"></i>&nbsp;&nbsp;
-              <span class="fs-5 fw-semibold">User Name</span>
+              <span class="fs-5 fw-semibold">{{ myUserInfo.username }}</span>
             </span>
             <router-link class="nav-link" style="text-color: #2c3e50;" to="/">
               <i class="fa-solid fa-right-from-bracket"/> 
@@ -82,15 +82,20 @@
         </div>
       </div>
     </div>
+    
     <!-- all files in the group -->
     <div class="content">
+      <p>{{myUserInfo}}</p>
+      <p>{{currentWorkspace}}</p>
+      <!-- <p>{{getOwnerInfo(uid)}}</p> -->
+      <!-- <p>{{allFiles}}</p> -->
       <div class="card border-0">
         <div class="card-body" style="padding-left:32px">
           <div class="col-1">
             <select class="form-select">
               <option value="" selected disabled>Tags</option>
               <option value="all">All</option>
-              <option value="untitled">Untagged</option>
+              <option value="untagged">Untagged</option>
               <option value="tag1">Tag1</option>
               <option value="tag2">Tag2</option>
             </select>
@@ -114,7 +119,21 @@
           <div class="card-body">
             <div class="d-grid file-grid">
               <!-- single file -->
-              <div class="d-flex flex-column card-body grid-item btn file-card">
+              <div v-for="(file, idx) in allFiles" :key="idx" class="d-flex flex-column card-body grid-item btn file-card">
+                <div class="text-truncate justify-content-center align-items-center">
+                  <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold">&nbsp;&nbsp;{{file.name}}</span>
+                </div>
+                <div class="d-grid edit-delete-grid mt-1 justify-content-center align-items-center">
+                  <span class="card-subtitle text-nowrap" style="grid-column:2">owner: {{ getOwnerInfo(file.owner).username }}</span>
+                  <button v-if="getOwnerInfo(file.owner).isOwner" class="btn btn-delete" style="grid-column:3">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+                <router-link :to="{ path: `/home/${uid}/file/${file._id}`, query: { wid: currentWorkspace._id }}" class="btn btn-edit mt-1">
+                  <i class="fa-solid fa-pen-to-square"></i> Edit
+                </router-link>
+              </div>
+              <!-- <div class="d-flex flex-column card-body grid-item btn file-card">
                 <div class="text-truncate justify-content-center align-items-center">
                   <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold"> File1</span>
                 </div>
@@ -127,35 +146,7 @@
                 <router-link to="/file" class="btn btn-edit mt-1">
                   <i class="fa-solid fa-pen-to-square"></i> Edit
                 </router-link>
-              </div>
-              <div class="d-flex flex-column card-body grid-item btn file-card">
-                <div class="text-truncate justify-content-center align-items-center">
-                  <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold"> File1</span>
-                </div>
-                <div class="d-grid edit-delete-grid mt-1 justify-content-center align-items-center">
-                  <span class="card-subtitle text-nowrap" style="grid-column:2">owner: user1</span>
-                  <button v-if="isOwner" class="btn btn-delete" style="grid-column:3">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-                <router-link to="/file" class="btn btn-edit mt-1">
-                  <i class="fa-solid fa-pen-to-square"></i> Edit
-                </router-link>
-              </div>
-              <div class="d-flex flex-column card-body grid-item btn file-card">
-                <div class="text-truncate justify-content-center align-items-center">
-                  <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold"> File1</span>
-                </div>
-                <div class="d-grid edit-delete-grid mt-1 justify-content-center align-items-center">
-                  <span class="card-subtitle text-nowrap" style="grid-column:2">owner: user1</span>
-                  <button v-if="isOwner" class="btn btn-delete" style="grid-column:3">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-                <router-link to="/file" class="btn btn-edit mt-1">
-                  <i class="fa-solid fa-pen-to-square"></i> Edit
-                </router-link>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -230,31 +221,31 @@
                 <button class="btn btn-close" data-bs-dismiss="modal"></button>
               </div>
 
-              <div class="modal-body">               
-                <div class="d-flex gap-3 mb-3">
-                  <div class="col">
-                    <label>FileName</label>
-                    <input type="text" class="form-control" v-model="filename"/>
-                  </div>
-                  <div class="col">
-                    <label>Add tags</label>
-                    <select class="form-select" v-model="selectedTags">
-                      <option value="" selected disabled>select</option>
-                      <option value="none">None</option>
-                      <option value="tag1">Tag1</option>
-                      <option value="tag2">Tag2</option>
-                    </select>
-                  </div>
-                </div>
-
+              <div class="modal-body">  
+                <!-- filename -->
+                <div class="form-group">
+                  <label>FileName</label>
+                </div>          
+                <div class="container my-2">
+                  <input type="text" class="form-control" v-model="filename"/>
+                </div>  
+                <!-- add tags -->
                 <div class="form-group">
                   <label>Added Tags</label>
                 </div>
                 <div class="card-body">
-                  <div class="container">
-                    <div class="list-group my-2" style="height: 12vh; overflow-y:scroll;">
-                      <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
-                        <span class="fw-bolder" style="color:#2c3e50"> tag1</span>
+                  <div class="container my-2">
+                    <dropSearch class="form-control" 
+                      :options="options"
+                      :disabled="false"
+                      :placeholder="'search for a tag...'"
+                      v-on:selected="tagSelection">
+                    </dropSearch>
+                    <div class="card-body mt-2">
+                      <div class="list-group my-2" style="height: 20vh; overflow-y:scroll;">
+                        <div v-for="(tag, idx) in selectedTag" :key="idx" class="list-group-item d-flex justify-content-between list-group-item-action"> 
+                          <span class="fw-bolder" style="color:#2c3e50"> {{ tag }}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -262,7 +253,7 @@
               </div>
               
               <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Create</button>
+                <button @click="createFile" :disabled="filename == ''" type="button" class="btn btn-success" data-bs-dismiss="modal">Create</button>
               </div>
             </div>
           </div>
@@ -353,29 +344,248 @@
       </div>
     </div>
 
-
   </div>
 
 
 </template>
 
 <script>
+import { ref, onMounted } from 'vue'
+import { useRoute , useRouter } from 'vue-router'
 import DropSearch from '../components/dropSearch.vue';
+
 export default{
   components:{
     'dropSearch':DropSearch,
   },
-  data() {
+  // data() {
+  //   return {
+  //     isOwner: true,
+  //     MemberNum: 6,
+  //     selectedTag: ['untagged'],
+  //     options: [''],
+  //   }
+  // },
+  setup() {
+    const route = useRoute();
+    const router = useRouter();
+
+    const uid = ref('');
+
+    const errorMessage = ref('')
+    const successMessage = ref('')
+
+    const isOwner = ref(true);
+    const MemberNum = ref(6);
+    
+    const options = ref(['']);
+
+    // get user info 
+    const myUserInfo = ref({});
+    const getUserInfo = async() => {
+      try {
+        await fetch(`http://localhost:3080/api/getUserInfo/${uid.value}`)
+        .then(res => res.json())
+        .then(res => {
+          myUserInfo.value = res.data
+          // debugger
+        })
+      }
+      catch(error) {
+        console.log(error) 
+      }
+    }
+
+    // get workspace info
+    const currentWorkspace = ref({});
+    const allWorkspaces = ref([]);
+    const workspaceInfo = ref({});
+    const getWorkspaceInfo = async(wid) => {
+      try {
+        await fetch(`http://localhost:3080/api/getWorkspace/${wid}`)
+        .then(res => res.json())
+        .then(res => {
+          workspaceInfo.value = res.data;
+        })
+      }
+      catch {
+        console.log(error)
+      }
+    }
+
+    const getAllWorkspaces = async() => {
+      for(var wid of myUserInfo.value.workspace){
+        await getWorkspaceInfo(wid);
+        // if(!allWorkspaces.value.includes(workspaceInfo.value)){
+        // }
+        allWorkspaces.value.push(workspaceInfo.value);
+      }
+    }
+
+    const getCurrentWorkspace = async() => {
+      try {
+        var wid = currentWorkspace.value._id;
+        await fetch(`http://localhost:3080/api/getWorkspace/${wid}`)
+        .then(res => res.json())
+        .then(res => {
+          // get new current workspace
+          currentWorkspace.value = res.data;
+          // update the all workspace list
+          var index = allWorkspaces.value.findIndex((workspace) => workspace._id === wid);
+          if (index !== -1) {
+            allWorkspaces.value[index] = currentWorkspace.value;
+          }
+          // console.log(index);
+        })
+      }
+      catch {
+        console.log(error)
+      }
+    }
+
+    // get file info
+    const allFiles = ref([]);
+    const fileInfo = ref({});
+    const getFileInfo = async(fid) => {
+      try {
+        // console.log(fid);
+        await fetch(`http://localhost:3080/api/getFile/${fid}`)
+        .then(res => res.json())
+        .then(res => {
+          fileInfo.value = res.data;
+        })
+      }
+      catch(error) {
+        console.log(error)
+      }
+    }
+
+    const getAllFiles = async(workspace) => {
+      for(var fid of workspace.files){
+        await getFileInfo(fid);
+        // if (!allFiles.value.includes(fileInfo.value)) {
+        // }
+        allFiles.value.push(fileInfo.value);
+      }
+    }
+
+    // on Mounted
+
+    onMounted(async() => {
+      uid.value = route.params.id;
+      await getUserInfo();
+      await getAllWorkspaces();
+      // console.log(allWorkspaces);
+      currentWorkspace.value = allWorkspaces.value[0];
+      // await getCurrentWorkspace();
+
+      await getAllFiles(currentWorkspace.value);
+
+    })
+
+    // create file
+    const filename = ref('');
+    const selectedTag = ref(['untagged']);
+    const createFile = () => { 
+
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+          // "auth-token": state.token
+        },
+        body: JSON.stringify({
+          file_name:    filename.value,
+          user_id:      uid.value,
+          file_tags:    selectedTag.value, 
+          workspace_id: currentWorkspace.value._id
+        }),
+      }
+      
+      fetch("http://localhost:3080/api/createFile", requestOptions)
+        .then(res => {
+          res.json().then(data => { successMessage.value = data.message } )
+        })
+        .then(getCurrentWorkspace())
+        .then(getAllFiles(currentWorkspace.value))
+        .catch(err => {
+          err.json().then(data => { errorMessage.value = data.message } )
+        })
+    }
+
+    // get file owner name
+    const getOwnerInfo = async(ownerId) => {
+      const ownerInfo = {
+        username: '',
+        isOwner: false,
+      };
+      try {
+        await fetch(`http://localhost:3080/api/getUserInfo/${ownerId}`)
+        .then(res => res.json())
+        .then(res => {
+          ownerInfo.username = res.data.username;
+          if(ownerInfo.username === myUserInfo.value.username){
+            ownerInfo.isOwner = true;
+          }
+          // console.log(ownerInfo);
+          return ownerInfo;
+        })
+      }
+      catch(error) {
+        console.log(error);
+        return null;
+      }
+    }
+
+
+
     return {
-      createWorkspaceModal: false,
-      isOwner: true,
-      MemberNum: 6,
+      errorMessage,
+      successMessage,
+      //
+      uid,
+      getUserInfo,
+      myUserInfo,
+      //
+      getAllWorkspaces,
+      getWorkspaceInfo,
+      getCurrentWorkspace,
+      workspaceInfo,
+      allWorkspaces,
+      currentWorkspace,
+      //
+      getAllFiles,
+      getFileInfo,
+      fileInfo,
+      allFiles,
+      // 
+      filename,
+      selectedTag,
+      createFile,
+      //
+      getOwnerInfo,
+
+      isOwner,
+      MemberNum,
+      options,
     }
   },
-  setup() {
-    //File data
-  },
   methods: {
+    tagSelection(selection) {
+      // this.selectedTag = selection;
+      // console.log(selection + " has been selected");
+      // if(selection != undefined){
+        // this.teamInfo.teamName = selection.name;
+        // this.$http.get(this.db + 'team/'+ selection.teamid + '.json').then(function(data){
+        //   return data.json();
+        // }).then(function(data){
+        //   this.teamInfo.members = data.members;
+        //   // console.log(this.teamInfo.members);
+        //   this.teamInfoModal = true;
+        // })
+        
+      // }
+    },
   },
 }
 </script>

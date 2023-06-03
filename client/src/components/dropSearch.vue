@@ -19,7 +19,7 @@
         @mousedown="selectOption(option)"
         v-for="(option, index) in filteredOptions"
         :key="index">
-          {{ option.name || option.teamid || '-' }}
+          {{ option || '-' }}
       </div>
     </div>
   </div>
@@ -45,7 +45,7 @@
       placeholder: {
         type: String,
         required: false,
-        default: 'Search team...',
+        default: 'Search for a tag...',
         note: 'Placeholder of dropdown'
       },
       disabled: {

@@ -2,7 +2,7 @@
   <!-- nav bar -->
   <div class="navbar d-grid nav-grid py-0" style="background-color:#E5E8E8">
     <div class="d-flex justify-content-between ps-2 pe-3" style="grid-column:1;">
-      <router-link to="/home" class="btn d-flex align-items-center fs-5 px-0 fw-bolder ms-2 text-nowrap" style="color:#2c3e50">
+      <router-link :to="`/home/${uid}`" class="btn d-flex align-items-center fs-5 px-0 fw-bolder ms-2 text-nowrap" style="color:#2c3e50">
         <i class="fa-solid fa-file-lines fs-4" style="color:#2c3e50"></i>&nbsp;&nbsp;My Workspace
       </router-link>
       <div class="btn-group btn-group-sm my-2 mx-3" role="group">
@@ -56,7 +56,7 @@
             <div class="modal-body">
               <div class="sidebutton" style="height: 70vh; overflow-y:auto">
                 <div class="list-group text-start" style="; color:#2c3e50">
-                  <button v-for="(idx) in 14" class="list-group-item d-flex flex-column justify-content-between"> 
+                  <button v-for="(idx) in 14" :key="idx" class="list-group-item d-flex flex-column justify-content-between"> 
                     <span class="fw-bolder fs-5" style="color:#2c3e50">user {{idx}}</span>  
                     <span class="fw-bolder fs-6" style="color:#2c3e50">2023-06-01 20:{{idx}}</span>                   
                   </button>
@@ -100,7 +100,7 @@
                   <!-- <button v-for="(idx) in 14" class="btn btn-mode btn-block m-1">
                     <span class="fw-bolder fs-6 py-2" style="color:#2c3e50">2023-06-01 20:10</span>
                   </button> -->
-                  <button v-for="(idx) in 14" class="list-group-item d-flex flex-column justify-content-between"> 
+                  <button v-for="(idx) in 14" :key="idx" class="list-group-item d-flex flex-column justify-content-between"> 
                     <span class="fw-bolder fs-6 py-2" style="color:#2c3e50" @click="console.log('helo')">2023-06-01 20:{{idx}}</span>                   
                   </button>
                 </div>
@@ -164,14 +164,23 @@
 </template>
 
 <script>
+import { ref, onMounted } from 'vue'
+import { useRoute , useRouter } from 'vue-router'
 import DropSearch from '../components/dropSearch.vue';
 
 export default {
+  // props: {
+  //   wid: {
+  //     type: String,
+  //     required: true,
+  //   },
+  // },
   components:{
     'dropSearch':DropSearch,
   },
   data(){
     return{
+
       filename: 'File1',
       markdown: '',
       snapshot: '# hello',
@@ -200,7 +209,27 @@ export default {
     }
   },
   setup() {
-    //File data 
+    const route = useRoute();
+    const router = useRouter();
+
+    const uid = ref('');
+    const wid = ref('');
+    const fid = ref('');
+    
+    const errorMessage = ref('')
+    const successMessage = ref('')
+
+    onMounted(async() => {
+      uid.value = route.params.uid;
+      wid.value = route.query.wid;
+      fid.value = route.params.fid;
+    })
+
+    return {
+      uid,
+      wid,
+      fid,
+    }
 
   },
   computed: {
