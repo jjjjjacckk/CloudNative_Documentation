@@ -6,9 +6,13 @@
       <div class="d-flex flex-column flex-shrink-0 p-3" style="background-color:#E5E8E8; height:100vh;">
         <span class="fs-4 fw-semibold text-truncate">My Workspace</span>
         <hr style="border-color:#909497">
-        <form>
-          <input class="form-control mb-2" type="text" placeholder="Search file ..." aria-label="Search">
-        </form>
+        <dropSearch class="form-control mb-2 mt-0" 
+                    :options="fileOptions"
+                    :disabled="false"
+                    :placeholder="'Search file...'"
+                    v-on:selected="validateFileSelection">
+        </dropSearch>
+
         <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#aboutModal">
           <i class="fa-solid fa-lightbulb" style="width:23px"></i> About
         </button>
@@ -284,10 +288,10 @@
               <div class="modal-body">
                 <div class="d-flex mx-2 my-2">
                   <dropSearch class="form-control" 
-                  :options="options"
-                  :disabled="false"
-                  :placeholder="'Workspace name...'"
-                  v-on:selected="validateSelection">
+                              :options="workspaceOptions"
+                              :disabled="false"
+                              :placeholder="'Workspace name...'"
+                              v-on:selected="validateWorkspaceSelection">
                   </dropSearch>
                   <button class="btn btn-text-color btn-outline-dark text-nowrap my-2" @click="createWorkspaceModal=true">
                     <i class="fa-solid fa-magnifying-glass"></i>
@@ -367,15 +371,23 @@ export default{
   },
   data() {
     return {
+      curWorkspace: 'private',
       createWorkspaceModal: false,
       isOwner: true,
       MemberNum: 6,
+      workspaceOptions: [ {name: 'jack1', id: '123123'}, {name: 'jack2', id: '123123'}, {name: 'jack3', id: '123123'},
+                          {name: 'jack4', id: '123123'}, {name: 'jack5', id: '123123'}, {name: 'jack6', id: '123123'},
+                          {name: 'jack7', id: '123123'}, {name: 'jack8', id: '123123'}, {name: 'jack9', id: '123123'}], // [ {name: '', id: ''} ]
+      fileOptions: [{name: 'jack8', id: '123123'}, {name: 'jack9', id: '123123'}, {name: 'jack0', id: '123123'},
+                    {name: 'jack4', id: '123123'}, {name: 'jack5', id: '123123'}, {name: 'jack6', id: '123123'},
+                    {name: 'jack7', id: '123123'}, {name: 'jack8', id: '123123'}, {name: 'jack9', id: '123123'}], // [ {name: '', id: ''} ]
     }
   },
   setup() {
     //File data
   },
   methods: {
+
   },
 }
 </script>
