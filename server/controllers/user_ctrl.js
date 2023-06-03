@@ -2,6 +2,7 @@ const User = require('../models/user')
 const Workspace = require('../models/workspace')
 
 createUser = async (req, res) => { // need create workspace
+    console.log('createUser')
     const body = req.body
     // const body = {  account: "1234567",
     //                 password: "abcdefg",
@@ -41,6 +42,13 @@ createUser = async (req, res) => { // need create workspace
         await workspace.save()
 
         user.workspace.push(workspace._id)
+
+        const public = await Workspace.findOne({name: 'Public'})
+        
+        public.members.push(user._id)
+        await public.save()
+
+        user.workspace.push(public._id)
 
         await user.save()
 

@@ -123,9 +123,43 @@ leaveWorkspace = async (req, res) => {
     }
 }
 
+joinWorkspace = async (req, res) => {
+    const body = req.body
+    const uid = body.id
+    // const uid = '647b2ef0b46647001a73a0f6'
+
+    try {
+        const workspace = await Workspace.findOne({ _id: req.params.id})
+
+        if (!workspace) {
+            console.count('error: ' + 'Workspace not found');
+            return res.status(403).json({ message: 'failed' })
+        }
+
+        const user = await User.findOne({ _id: uid})
+
+        if (!user) {
+            console.count('error: ' + 'User not found');
+            return res.status(403).json({ message: 'failed' })
+        }
+
+        workspace.members.push(uid)
+        await workspace.save()
+
+        user.workspace.push(req.params.id)
+        await user.save()
+
+        return res.status(200).json({ message: 'success' })
+    } catch (error) {
+        console.count('error: ' + error)
+        return res.status(400).json({ message: 'failed' })
+    }
+}
+
 module.exports = {
     createWorkspace,
     getWorkspace,
     getWorkspaceTags,
     leaveWorkspace,
+    joinWorkspace,
 }
