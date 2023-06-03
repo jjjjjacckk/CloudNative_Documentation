@@ -99,6 +99,7 @@ export default{
         })
       }
       catch(error) {
+        AllUser.value = []
         console.log(error) // do different error to showcase - line 15 wrong name + line13 with incorrect path
       }
     }
@@ -109,21 +110,25 @@ export default{
 
     const checkUser = (acc, passwd) => {
     
-      var matchAcc = AllUser.value.find(element => element.account == loginUser.value.account);
-      if(matchAcc == undefined){
+      if(!AllUser.value.length) {
         errorMessage.value = 'account not exist';
-      } else{
-        if(matchAcc.password == loginUser.value.password){
-          errorMessage.value = '';
-          console.log('success');
-
-          var authID = matchAcc._id;
-          router.push('/home/' + authID);
+      }
+      else {
+        var matchAcc = AllUser.value.find(element => element.account == loginUser.value.account);
+        if(matchAcc == undefined){
+          errorMessage.value = 'account not exist';
         } else{
-          errorMessage.value = 'wrong password';
+          if(matchAcc.password == loginUser.value.password){
+            errorMessage.value = '';
+            console.log('success');
+  
+            var authID = matchAcc._id;
+            router.push('/home/' + authID);
+          } else{
+            errorMessage.value = 'wrong password';
+          }
         }
       }
-
     }
   
   
