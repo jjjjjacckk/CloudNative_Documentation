@@ -1,12 +1,12 @@
 version: "3.1"
 services:
-  react-client:
+  vue-client:
     build:
       context: ./client
       dockerfile: Dockerfile
     ports:
-      - 3010:3000
-    container_name: react-ui
+      - 8080:8080 #container:host
+    container_name: vue-ui
     networks:
       - mern-stack-net
     depends_on:
@@ -36,6 +36,7 @@ services:
     volumes:
       - mongo-data:/data/db
 
+  # mongo weGUI
   mongo-express:
     image: mongo-express
     container_name: mongo-express
