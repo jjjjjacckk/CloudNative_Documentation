@@ -99,7 +99,6 @@ export default{
         })
       }
       catch(error) {
-        AllUser.value = []
         console.log(error) // do different error to showcase - line 15 wrong name + line13 with incorrect path
       }
     }
@@ -109,6 +108,7 @@ export default{
     })
 
     const checkUser = (acc, passwd) => {
+      // console.log(AllUser.value.length)
     
       if(!AllUser.value.length) {
         errorMessage.value = 'account not exist';

@@ -68,11 +68,11 @@ getAllUsers = async (req, res) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
         }
-        if (!AllUser.length) {
-            return res
-                .status(404)
-                .json({ success: false, error: `User not found` })
-        }
+        // if (!AllUser.length) {
+        //     return res
+        //         .status(404)
+        //         .json({ success: false, error: `User not found` })
+        // }
         return res.status(200).json({ success: true, data: AllUser })
     }).catch(err => console.log(err))
 }
