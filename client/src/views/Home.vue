@@ -6,12 +6,12 @@
       <div class="d-flex flex-column flex-shrink-0 p-3" style="background-color:#E5E8E8; height:100vh;">
         <span class="fs-4 fw-semibold text-truncate">My Workspace</span>
         <hr style="border-color:#909497">
-        <dropSearch class="form-control mb-2 mt-0" 
+        <dropSearchFile class="form-control mb-2 mt-0" 
                     :options="fileOptions"
                     :disabled="false"
                     :placeholder="'Search file...'"
                     v-on:selected="validateFileSelection">
-        </dropSearch>
+        </dropSearchFile>
 
         <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#aboutModal">
           <i class="fa-solid fa-lightbulb" style="width:23px"></i> About
@@ -287,12 +287,12 @@
               
               <div class="modal-body">
                 <div class="d-flex mx-2 my-2">
-                  <dropSearch class="form-control" 
+                  <dropSearchWorkspace class="form-control" 
                               :options="workspaceOptions"
                               :disabled="false"
                               :placeholder="'Workspace name...'"
                               v-on:selected="validateWorkspaceSelection">
-                  </dropSearch>
+                  </dropSearchWorkspace>
                   <button class="btn btn-text-color btn-outline-dark text-nowrap my-2" @click="createWorkspaceModal=true">
                     <i class="fa-solid fa-magnifying-glass"></i>
                   </button>
@@ -364,14 +364,19 @@
 </template>
 
 <script>
-import DropSearch from '../components/dropSearch.vue';
+import dropSearchWorkspace from '../components/dropSearchWorkspace.vue';
+import dropSearchFile from '../components/dropSearchFile.vue';
+import { ref, computed } from 'vue'
+import { useRoute , useRouter } from 'vue-router'
+
+
 export default{
   components:{
-    'dropSearch':DropSearch,
+    'dropSearchWorkspace':dropSearchWorkspace,
+    'dropSearchFile':dropSearchFile,
   },
   data() {
     return {
-      curWorkspace: 'private',
       createWorkspaceModal: false,
       isOwner: true,
       MemberNum: 6,
@@ -385,9 +390,40 @@ export default{
   },
   setup() {
     //File data
+    const validateWorkspaceSelection = (selection) => {
+      console.log(selection.name + " has been selected");
+      if(selection.name != undefined) {
+        if (selection.name.includes('Create')) {
+          // create workspace
+          console.log("should create workspace");
+        } 
+
+        // join workspace
+        // fetch("http://localhost:3080/api/joinWorkspace/" + _workspaceid)
+        //   .then(res => {
+        //     res.json().then(data => { successMessage.value = data.message } )
+        //   })
+        //   .catch(err => {
+        //     err.json().then(data => { errorMessage.value = data.message } )
+        //   })
+      } 
+    }
+
+    const validateFileSelection = (selection) => {
+      const route = useRoute();
+      const router = useRouter();
+
+
+      console.log(selection.name + " has been selected");
+      if(selection.name != undefined) {
+        // goto file edit (selection.id <- file id)
+        // router.push('/file');
+      } 
+    }
+
+    return { validateWorkspaceSelection, validateFileSelection }
   },
   methods: {
-
   },
 }
 </script>

@@ -23,7 +23,7 @@
             </div>
             <div class="col-sm-12 mb-4 form-group">
               <!-- <button :disabled="user.account == '' || user.password == ''" @click.prevent="loginRequest" class="btn btn-primary btn-lg col-sm-4">登入</button> -->
-              <button :disabled="loginUser.account == '' || loginUser.password == ''" @click.prevent="checkUser(loginUser.account, loginUser.password)" class="btn btn-primary btn-lg col-sm-4">Login</button>
+              <button :disabled="loginUser.account == '' || loginUser.password == ''" @click.prevent="checkUser" class="btn btn-primary btn-lg col-sm-4">Login</button>
             </div>
             <div class="col-sm-12 form-group">
             <p>Don't have an account? <router-link to="/signup">Signup</router-link></p>
@@ -89,6 +89,7 @@ export default{
     const router = useRouter();
 
     const getAllUser = async() => {
+      console.log()
       try {
         await fetch("http://localhost:3080/api/getAllUsers")
         .then(res => res.json())
@@ -103,13 +104,14 @@ export default{
       }
     }
 
-    onMounted(() => {
-      getAllUser()
-    })
+    // onMounted(() => {
+    //   getAllUser()
+    // })
 
-    const checkUser = (acc, passwd) => {
-      // console.log(AllUser.value.length)
     
+    const checkUser = () => {
+      // console.log(AllUser.value.length)
+      
       if(!AllUser.value.length) {
         errorMessage.value = 'account not exist';
       }
@@ -121,7 +123,7 @@ export default{
           if(matchAcc.password == loginUser.value.password){
             errorMessage.value = '';
             console.log('success');
-  
+            
             var authID = matchAcc._id;
             router.push('/home/' + authID);
           } else{
@@ -130,8 +132,10 @@ export default{
         }
       }
     }
-  
-  
+    
+    getAllUser()
+    console.log("alluser = " + AllUser.value)
+    
     return { loginUser, successMessage, errorMessage, getAllUser, checkUser }
   },
 }
