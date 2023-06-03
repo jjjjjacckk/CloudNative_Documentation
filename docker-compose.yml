@@ -1,18 +1,18 @@
 version: "3.1"
 services:
-  vue-client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    ports:
-      - 8080:8080 #container:host
-    container_name: vue-ui
-    networks:
-      - mern-stack-net
-    depends_on:
-      - express-server
-    tty: true
-    stdin_open: true
+  # vue-client:
+  #   build:
+  #     context: ./client
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 8080:8080 #container:host
+  #   container_name: vue-ui
+  #   networks:
+  #     - mern-stack-net
+  #   depends_on:
+  #     - express-server
+  #   tty: true
+  #   stdin_open: true
 
   express-server:
     build:
