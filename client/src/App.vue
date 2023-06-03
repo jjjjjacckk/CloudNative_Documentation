@@ -4,10 +4,10 @@
     <router-link to="/about">About</router-link>
   </nav> -->
   <div id="app">
-    <router-link to="/">Login</router-link> |
-    <router-link to="/signup">SignUp</router-link> | 
-    <router-link to="/home">Home</router-link> | 
-    <router-link to="/file">File</router-link>
+    <!-- <router-link to="/">Login</router-link> |
+    <router-link to="/signup">SignUp</router-link> |  -->
+    <!-- <router-link to="/home">Home</router-link> |  -->
+    <!-- <router-link to="/file">File</router-link> -->
     <router-view/>
   </div>
 </template>
