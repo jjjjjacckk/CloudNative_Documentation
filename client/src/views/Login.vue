@@ -94,7 +94,7 @@ export default{
         await fetch("http://localhost:3080/api/getAllUsers")
         .then(res => res.json())
         .then(res => {
-          // console.log(res.data)
+          console.log(res.data)
           AllUser.value = res.data
           // debugger
         })
@@ -104,9 +104,9 @@ export default{
       }
     }
 
-    // onMounted(() => {
-    //   getAllUser()
-    // })
+    onMounted(() => {
+      getAllUser()
+    })
 
     
     const checkUser = () => {
@@ -136,8 +136,8 @@ export default{
 
     }
     
-    getAllUser()
-    console.log("alluser = " + AllUser.value)
+    // getAllUser()
+    // console.log("alluser = " + AllUser.value)
     
     return { loginUser, successMessage, errorMessage, getAllUser, checkUser }
   },

@@ -166,7 +166,7 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { useRoute , useRouter } from 'vue-router'
-import DropSearch from '../components/dropSearch.vue';
+import DropSearchFile from '../components/dropSearchFile.vue';
 
 export default {
   // props: {
@@ -176,7 +176,7 @@ export default {
   //   },
   // },
   components:{
-    'dropSearch':DropSearch,
+    'dropSearch': DropSearchFile,
   },
   data(){
     return{
