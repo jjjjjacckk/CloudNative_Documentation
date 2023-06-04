@@ -23,7 +23,11 @@
             </div>
             <div class="col-sm-12 mb-4 form-group">
               <!-- <button :disabled="user.account == '' || user.password == ''" @click.prevent="loginRequest" class="btn btn-primary btn-lg col-sm-4">登入</button> -->
+<<<<<<< HEAD
               <button :disabled="loginUser.account == '' || loginUser.password == ''" @click.prevent="checkUser" class="btn btn-primary btn-lg col-sm-4">Login</button>
+=======
+              <button :disabled="loginUser.account == '' || loginUser.password == ''" @click.prevent="checkUser()" class="btn btn-primary btn-lg col-sm-4">Login</button>
+>>>>>>> main
             </div>
             <div class="col-sm-12 form-group">
             <p>Don't have an account? <router-link to="/signup">Signup</router-link></p>
@@ -84,7 +88,6 @@ export default{
         username: '',
       })
     const errorMessage = ref('')
-    const successMessage = ref('')
     const AllUser = ref([])
     const router = useRouter();
 
@@ -108,35 +111,33 @@ export default{
       getAllUser()
     })
 
-    
     const checkUser = () => {
       // console.log(AllUser.value.length)
-    
+      
       if(!AllUser.value.length) {
         errorMessage.value = 'account not exist';
       }
       else {
         var matchAcc = AllUser.value.find(element => element.account == loginUser.value.account);
-        if(matchAcc == undefined){
+        if(matchAcc == undefined) {
           errorMessage.value = 'account not exist';
         } else{
           if(matchAcc.password == loginUser.value.password){
             errorMessage.value = '';
             console.log('success');
   
-            var authID = matchAcc._id;
-            router.push('/home/' + authID);
+            var uID = matchAcc._id;
+            var wID = matchAcc.workspace[0];
+            router.push({path: '/home/' + uID, query: { wid: wID }});
           } else{
             errorMessage.value = 'wrong password';
           }
         }
       }
     }
-    
-    // getAllUser()
-    // console.log("alluser = " + AllUser.value)
-    
-    return { loginUser, successMessage, errorMessage, getAllUser, checkUser }
+  
+  
+    return { loginUser, errorMessage, getAllUser, checkUser }
   },
 }
 </script>
