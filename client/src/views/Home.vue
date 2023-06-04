@@ -4,7 +4,7 @@
     <!-- <div class="col-lg-2 col-mid-3 col-sm-3 sidebar"> -->
     <div class="sidebar">
       <div class="d-flex flex-column flex-shrink-0 p-3" style="background-color:#E5E8E8; height:100vh;">
-        <span class="fs-4 fw-semibold text-truncate">My Workspace</span>
+        <span class="fs-4 fw-semibold text-truncate">{{ currentWorkspace.name }} Workspace</span>
         <hr style="border-color:#909497">
         <dropSearchFile class="form-control mb-2 mt-0" 
                     :options="fileOptions"
@@ -13,7 +13,7 @@
                     v-on:selected="validateFileSelection">
         </dropSearchFile>
 
-        <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#aboutModal">
+        <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" @click="getWorkspaceMember()" data-bs-toggle="modal" data-bs-target="#aboutModal">
           <i class="fa-solid fa-lightbulb" style="width:23px"></i> About
         </button>
         <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#fileModal">
@@ -44,7 +44,7 @@
               Private
             </button>
             <div class="collapse show list-group" id="private-collapse">
-              <button class="btn btn-text-color btn-workspace btn-block m-1">My workspace</button>
+              <button class="btn btn-text-color btn-workspace btn-block m-1" @click="changeWorkspace(0)">My workspace</button>
             </div>
           </div>
           <div class="">
@@ -53,7 +53,7 @@
               Public
             </button>
             <div class="collapse list-group" id="public-collapse">
-              <button class="btn btn-text-color btn-workspace btn-block m-1">Public workspace</button>
+              <button class="btn btn-text-color btn-workspace btn-block m-1" @click="changeWorkspace(1)">Public workspace</button>
             </div>
           </div>
           <div class="">
@@ -62,13 +62,16 @@
               Groups
             </button>
             <div class="collapse" id="groups-collapse">    
-              <div class="list-group text-truncate" style="height: 18vh;overflow-y: auto;">
-                <button class="btn btn-text-color btn-workspace btn-block m-1"><div class="text-truncate">Group1</div></button>
-                <button class="btn btn-text-color btn-workspace btn-block m-1"><div class="text-truncate">Group2</div></button>
-                <button class="btn btn-text-color btn-workspace btn-block m-1"><div class="text-truncate">Group3</div></button>
-                <button class="btn btn-text-color btn-workspace btn-block m-1"><div class="text-truncate">Group4</div></button>
-                <button class="btn btn-text-color btn-workspace btn-block m-1"><div class="text-truncate">Group5</div></button>
-                <button class="btn btn-text-color btn-workspace btn-block m-1"><div class="text-truncate">Group6</div></button>
+              <div class="list-group text-truncate" style="height: 18vh;overflow-y: auto;" >
+                <div v-for="(workspace, idx) in myUserWorkspaces" :key="idx">
+                  <button  v-if="idx>1" class="btn btn-text-color btn-workspace btn-block m-1" style="width: 230px" @click="changeWorkspace(idx)">
+                    <div class="text-truncate">{{ workspace.name }}</div>
+                    <!-- {{ workspace.name }} -->
+                  </button>
+                </div>
+                <!-- <button v-for="(workspace, idx) in myUserWorkspaces" :key="idx" class="btn btn-text-color btn-workspace btn-block m-1" @click="changeWorkspace(idx)">
+                  <div class="text-truncate">{{ workspace.name }}</div>
+                </button> -->
               </div>
             </div>
           </div>
@@ -160,36 +163,14 @@
               </div>
 
               <div id="aboutModalBody" class="modal-body">
-                <!-- <div v-for="item in members" :key="item._id">
-                  <p>
-                    {{ item.username }}
-                  </p>
-                </div> -->
                 <div class="card-body text-start">
                   <div class="list-group px-3" style="height: 18vh; overflow-y:scroll; color:#2c3e50">
-                    <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
-                      <span class="fw-bolder fs-5" style="color:#2c3e50"> user 1</span>
-                      <span class="badge bg-success d-flex align-items-center my-1">Admin</span>
-                    </div>
-                    <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
-                      <span class="fw-bolder fs-5" style="color:#2c3e50"> user 2</span>
-                      <span class="badge bg-primary d-flex align-items-center my-1">Member</span>
-                    </div>
-                    <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
-                      <span class="fw-bolder fs-5" style="color:#2c3e50"> user 3</span>
-                      <span class="badge bg-primary d-flex align-items-center my-1">Member</span>
-                    </div>
-                    <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
-                      <span class="fw-bolder fs-5" style="color:#2c3e50"> user 4</span>
-                      <span class="badge bg-primary d-flex align-items-center my-1">Member</span>
-                    </div>
-                    <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
-                      <span class="fw-bolder fs-5" style="color:#2c3e50"> user 5</span>
-                      <span class="badge bg-primary d-flex align-items-center my-1">Member</span>
-                    </div>
-                    <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
-                      <span class="fw-bolder fs-5" style="color:#2c3e50"> user 6</span>
-                      <span class="badge bg-primary d-flex align-items-center my-1">Member</span>
+
+                    <div v-for="(member, idx) in WorkspaceMember" :key="idx">
+                      <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
+                        <span class="fw-bolder fs-5" style="color:#2c3e50">{{ member }}</span>
+                        <span class="badge bg-primary d-flex align-items-center my-1">Member</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -266,7 +247,7 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title">Search Workspace</h4>
-                <button class="btn btn-close" data-bs-dismiss="modal"></button>
+                <button ref="leavebtn" class="btn btn-close" data-bs-dismiss="modal"></button>
               </div>
               
               <div class="modal-body">
@@ -304,11 +285,6 @@ export default{
     'dropSearchFile':dropSearchFile,
     'dropSearchTag':dropSearchTag,
   },
-  data() {
-    return {
-      
-    }
-  },
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -319,9 +295,11 @@ export default{
     const errorMessage = ref('')
     const successMessage = ref('')
 
+    const leavebtn = ref(null);
+
     // dropsearch data
     const isOwner = ref(true);
-    const MemberNum = ref(6);
+    const MemberNum = ref(0);
     const workspaceOptions = ref([]); // [ {name: '', id: ''} ]
     const tagOptions = ref([]); // [ {name: '', id: ''} ]
     const fileOptions = ref([]); // [ {name: '', id: ''} ]
@@ -349,10 +327,14 @@ export default{
 
           fetch("http://localhost:3080/api/createWorkspace" , requestOptions)
           // .then(GetAllTodos())
-            .then(res => res.body ) // redundant
-            .then(res => {
-              console.log(res);
-              router.go(0);
+            .then(res => res.json() ) // redundant
+            .then(async(res) => {
+              console.log(res.data);
+              await getUserWorkspaces();              
+              currentWorkspace.value = myUserWorkspaces.value.find(element => element._id == res.data);
+              console.log(currentWorkspace.value)
+              wid.value = currentWorkspace.value._id;
+              router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
             }) // redundant
             // router.push('/todos')
         } else {
@@ -370,12 +352,24 @@ export default{
 
           fetch("http://localhost:3080/api/joinWorkspace/" + selection.id , requestOptions)
           // .then(GetAllTodos())
-            .then(res =>  res.body) // redundant
-            .then(res => {console.log(res.data)}) // redundant
+            .then(res =>  res.json()) // redundant
+            .then(async(res) => {
+              console.log(res.message);
+              await getUserWorkspaces();    
+              console.log(myUserWorkspaces.value);       
+              currentWorkspace.value = myUserWorkspaces.value.find(element => element._id == selection.id);
+              console.log(currentWorkspace.value);       
+              wid.value = currentWorkspace.value._id;
+              router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
+              // router.go(0);
+            })
+            .then(() => {router.go(1)}) // redundant
             // router.push('/todos')
         }
 
       } 
+      // document.getElementById('workspaceModal').close();
+      leavebtn.value.click();
     }
 
     const validateTagSelection = async(selection) => {
@@ -449,6 +443,7 @@ export default{
 
     // get user info 
     const myUserInfo = ref({});
+    
     const getUserInfo = async() => {
       try {
         await fetch(`http://localhost:3080/api/getUserInfo/${uid.value}`)
@@ -470,6 +465,7 @@ export default{
 
     const getUserWorkspaces = async() => {
       myUserWorkspaces.value = []
+      await getUserInfo();
       for(var wid of myUserInfo.value.workspace){
         await getWorkspaceInfo(wid);
           myUserWorkspaces.value.push(workspaceInfo.value);
@@ -556,6 +552,19 @@ export default{
       }
     }
 
+    // get member info     
+    const WorkspaceMember = ref([]);
+    const getWorkspaceMember = async() => {
+      WorkspaceMember.value = []
+      for(var user of currentWorkspace.value.members) {
+        await fetch(`http://localhost:3080/api/getUserName/${user}`)
+        .then(res => res.json())
+        .then(res => {
+          WorkspaceMember.value.push(res.data);
+        });
+        MemberNum.value = WorkspaceMember.value.length;
+      }
+    }
 
 
     // on Mounted
@@ -609,7 +618,6 @@ export default{
         })
     }
 
-    // get file owner name
     // leave workspace
     const leaveWorkspace = async() => {
       try {
@@ -636,14 +644,23 @@ export default{
       } 
     }
 
+    // change workspace
+    const changeWorkspace = (idx) => {
+      console.log(myUserWorkspaces.value[idx]);
+      currentWorkspace.value = myUserWorkspaces.value[idx];
+      wid.value = currentWorkspace.value._id;
+      router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
+    }
+
     return {
       errorMessage,
       successMessage,
+      leavebtn,
       //
       uid,
       wid,
-      getUserInfo,
       myUserInfo,
+      getUserInfo,
       //
       myUserWorkspaces,
       currentWorkspace,
@@ -653,6 +670,8 @@ export default{
       getFilteredWorkspaceFiles,
       getWorkspaceFiles,
       getFileInfo,
+      WorkspaceMember,
+      getWorkspaceMember,
       // 
       filename,
       selectedTag,
@@ -669,6 +688,7 @@ export default{
       //
       leaveWorkspace,
       filterSelectedTag,
+      changeWorkspace,
     }
   },
   methods: {
