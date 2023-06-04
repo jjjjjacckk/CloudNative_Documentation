@@ -45,7 +45,7 @@
       placeholder: {
         type: String,
         required: false,
-        default: 'Search team...',
+        default: 'Search for a tag...',
         note: 'Placeholder of dropdown'
       },
       disabled: {
