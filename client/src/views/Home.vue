@@ -121,10 +121,10 @@
               <!-- single file -->
               <div v-for="(file, idx) in WorkspaceFiles" :key="idx" class="d-flex flex-column card-body grid-item btn file-card">
                 <div class="text-truncate justify-content-center align-items-center">
-                  <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold">&nbsp;&nbsp;{{file}}</span>
+                  <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold">&nbsp;&nbsp;{{file.filename}}</span>
                 </div>
                 <div class="d-grid edit-delete-grid mt-1 justify-content-center align-items-center">
-                  <span class="card-subtitle text-nowrap" style="grid-column:2">owner: {{ WorkspaceFiles[idx].filename }}</span>
+                  <span class="card-subtitle text-nowrap" style="grid-column:2">owner: {{ file.ownername }}</span>
                   <button v-if="file.isOwner" class="btn btn-delete" style="grid-column:3">
                     <i class="fa-solid fa-trash"></i>
                   </button>
@@ -419,26 +419,17 @@ export default{
 
     // get file info
     const WorkspaceFiles = ref([]);
-    var fileInfo = ref({
-      id: '',
-      filename: '',
-      tag: [],
-      ownerId: '',
-      ownername: '',
-      isOwner: false,
-    });
-
-    const getWorkspaceFiles = async(workspace) => {
-      WorkspaceFiles.value = [];
-      for(var fid of workspace.files){
-        await getFileInfo(fid);
-        WorkspaceFiles.value.push(fileInfo.value);
-        console.log(fileInfo.value)
-        console.log(WorkspaceFiles.value)
-      }
-    }
-
+    
     const getFileInfo = async(fid) => {
+      const fileInfo = ref({
+        id: '',
+        filename: '',
+        tag: [],
+        ownerId: '',
+        ownername: '',
+        isOwner: false,
+      });
+
       try {
         // console.log(fid);
         await fetch(`http://localhost:3080/api/getFile/${fid}`)
@@ -448,7 +439,7 @@ export default{
           fileInfo.value.filename = res.data.name;
           fileInfo.value.tag = res.data.tag;
           fileInfo.value.ownerId = res.data.owner;
-          console.log(fileInfo.value.filename);
+          console.log('[getFileInfo] fileInfo.value.filename = ' + fileInfo.value.filename);
           // console.log(fileInfo.value.id);
         })
         .then(()=>{
@@ -464,13 +455,33 @@ export default{
               // console.log(fileInfo.value.isOwner)
             }
             // console.log(ownerInfo);
+            
           })
         })
+        return fileInfo;
       }
       catch(error) {
         console.log(error)
       }
     }
+
+    const getWorkspaceFiles = async(workspace) => {
+      WorkspaceFiles.value = [];
+      for(var fid of workspace.files){
+        var tempFileInfo;
+        await getFileInfo(fid).then(targetFile => {
+          console.log('[getWorkspaceFiles] = ');
+          console.log(targetFile.value)
+          WorkspaceFiles.value.push(targetFile.value);
+        });
+        // console.log('[getWorkspaceFiles] fid = ' + fid)
+        // console.log('[getWorkspaceFiles] fileInfo.value = ')
+        // console.log(fileInfo.value)
+        console.log('[getWorkspaceFiles] WorkspaceFiles.value = ')
+        console.log(WorkspaceFiles.value)
+      }
+    }
+
 
     // on Mounted
     onMounted(async() => {
@@ -554,6 +565,8 @@ export default{
     //   }
     // }
 
+    const validateSelection = () => {}
+
     return {
       errorMessage,
       successMessage,
@@ -568,7 +581,7 @@ export default{
       getUserWorkspaces,
       //
       WorkspaceFiles,
-      fileInfo,
+      // fileInfo,
       getWorkspaceFiles,
       getFileInfo,
       // 
@@ -582,6 +595,9 @@ export default{
       isOwner,
       MemberNum,
       options,
+
+
+      validateSelection,
     }
   },
   methods: {
