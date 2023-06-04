@@ -19,7 +19,7 @@
         <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#fileModal">
           <i class="fa-solid fa-file" style="width:23px"></i> Create File
         </button>
-        <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#workspaceModal">
+        <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" @click="isShowCreateWorkspaceModal=true">
           <i class="fa-solid fa-user-plus" style="width:23px"></i> Search Workspace
         </button>
 
@@ -249,14 +249,14 @@
     </div>
     
     <!-- Create Workspace Modal ! -->
-    <div id="workspaceModal" class="modal fade" role="dialog" aria-hidden="true">
+    <div v-if="isShowCreateWorkspaceModal" id="workspaceModal" class="modal" role="dialog">
       <div class="modal-mask">
         <div class="modal-wrapper">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title">Search Workspace</h4>
-                <button class="btn btn-close" data-bs-dismiss="modal"></button>
+                <button class="btn btn-close" @click="isShowCreateWorkspaceModal=false"></button>
               </div>
               
               <div class="modal-body">
@@ -310,10 +310,13 @@ export default{
     const workspaceOptions = ref([]); // [ {name: '', id: ''} ]
     const tagOptions = ref([]); // [ {name: '', id: ''} ]
     const fileOptions = ref([]); // [ {name: '', id: ''} ]
+    const isShowCreateWorkspaceModal = ref(false); 
 
     const validateWorkspaceSelection = async(selection) => {
       console.log('[validate Workspace Selection] ' + selection.name + " has been selected with wid = " + selection.id);
       console.log(" uid = " + uid.value + " wid = " + wid.value);
+      console.log(" isShowCreateWorkspaceModal.value = " + isShowCreateWorkspaceModal.value);
+
       if(selection.name != undefined) {
         if (selection.name.includes('Create')) {
           // create workspace
@@ -362,8 +365,8 @@ export default{
             .then(res =>  res.json()) // redundant
             .then(async(res) => {
               console.log(res.message);
-              await getUserWorkspaces();    
-              console.log(myUserWorkspaces.value);       
+              await getUserWorkspaces();
+              console.log(myUserWorkspaces.value);
               currentWorkspace.value = myUserWorkspaces.value.find(element => element._id == selection.id);
               console.log(currentWorkspace.value);       
               wid.value = currentWorkspace.value._id;
@@ -373,7 +376,8 @@ export default{
             .then(() => {router.go(1)}) // redundant
             // router.push('/todos')
         }
-
+        
+        isShowCreateWorkspaceModal.value = false;
       } 
     }
 
@@ -657,6 +661,7 @@ export default{
       //
       WorkspaceFiles,
       // fileInfo,
+      isShowCreateWorkspaceModal,
       getWorkspaceFiles,
       getFileInfo,
       WorkspaceMember,
