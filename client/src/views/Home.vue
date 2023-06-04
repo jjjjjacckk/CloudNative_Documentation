@@ -133,7 +133,7 @@
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
-                <router-link :to="{ path: `/home/${uid}/file/${file._id}`, query: { wid: currentWorkspace._id }}" class="btn btn-edit mt-1">
+                <router-link :to="{ path: `/home/${uid}/file/${file.id}`, query: { wid: currentWorkspace._id }}" class="btn btn-edit mt-1">
                   <i class="fa-solid fa-pen-to-square"></i> Edit
                 </router-link>
               </div>
