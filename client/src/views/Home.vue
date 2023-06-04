@@ -89,8 +89,8 @@
     
     <!-- all files in the group -->
     <div class="content">
-      <p>{{myUserInfo}}</p>
-      <p>{{currentWorkspace}}</p>
+      <!-- <p>{{myUserInfo}}</p>
+      <p>{{currentWorkspace}}</p> -->
       <!-- <p>{{getOwnerInfo(uid)}}</p> -->
       <!-- <p>{{WorkspaceFiles}}</p> -->
       <div class="card border-0">
