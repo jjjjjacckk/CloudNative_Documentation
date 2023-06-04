@@ -138,7 +138,7 @@
                         <i class="fa-solid fa-trash"></i>
                       </button>
                     </div>
-                    <router-link :to="{ path: `/home/${uid}/file/${file._id}`, query: { wid: currentWorkspace._id }}" class="btn btn-edit mt-1">
+                    <router-link :to="{ path: `/home/${uid}/file/${file.id}`, query: { wid: currentWorkspace._id }}" class="btn btn-edit mt-1">
                       <i class="fa-solid fa-pen-to-square"></i> Edit
                     </router-link>
                   </div>
@@ -305,7 +305,7 @@ export default{
     const fileOptions = ref([]); // [ {name: '', id: ''} ]
 
     const validateWorkspaceSelection = async(selection) => {
-      // console.log('[validate Workspace Selection] ' + selection.name + " has been selected with wid = " + selection.id);
+      console.log('[validate Workspace Selection] ' + selection.name + " has been selected with wid = " + selection.id);
       // console.log(" uid = " + uid.value + " wid = " + wid.value);
       if(selection.name != undefined) {
         if (selection.name.includes('Create')) {
@@ -332,6 +332,7 @@ export default{
               console.log(res.data);
               await getUserWorkspaces();              
               currentWorkspace.value = myUserWorkspaces.value.find(element => element._id == res.data);
+              await getWorkspaceFiles(currentWorkspace.value);
               console.log(currentWorkspace.value)
               wid.value = currentWorkspace.value._id;
               router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
@@ -358,6 +359,7 @@ export default{
               await getUserWorkspaces();    
               console.log(myUserWorkspaces.value);       
               currentWorkspace.value = myUserWorkspaces.value.find(element => element._id == selection.id);
+              await getWorkspaceFiles(currentWorkspace.value);
               console.log(currentWorkspace.value);       
               wid.value = currentWorkspace.value._id;
               router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
@@ -367,9 +369,9 @@ export default{
             // router.push('/todos')
         }
 
+        leavebtn.value.click();
       } 
       // document.getElementById('workspaceModal').close();
-      leavebtn.value.click();
     }
 
     const validateTagSelection = async(selection) => {
@@ -645,9 +647,11 @@ export default{
     }
 
     // change workspace
-    const changeWorkspace = (idx) => {
+    const changeWorkspace = async(idx) => {
       console.log(myUserWorkspaces.value[idx]);
+      await getUserWorkspaces();  
       currentWorkspace.value = myUserWorkspaces.value[idx];
+      await getWorkspaceFiles(currentWorkspace.value);
       wid.value = currentWorkspace.value._id;
       router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
     }
