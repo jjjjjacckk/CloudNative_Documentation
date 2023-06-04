@@ -567,40 +567,41 @@ export default{
 
 
 
-    return {  errorMessage,
-              successMessage,
-              //
-              uid,
-              getUserInfo,
-              myUserInfo,
-              //
-              getAllWorkspaces,
-              getWorkspaceInfo,
-              getCurrentWorkspace,
-              workspaceInfo,
-              allWorkspaces,
-              currentWorkspace,
-              //
-              getAllFiles,
-              getFileInfo,
-              fileInfo,
-              allFiles,
-              // 
-              filename,
-              selectedTag,
-              createFile,
-              //
-              getOwnerInfo,
+    return {
+      errorMessage,
+      successMessage,
+      //
+      uid,
+      getUserInfo,
+      myUserInfo,
+      //
+      getAllWorkspaces,
+      getWorkspaceInfo,
+      getCurrentWorkspace,
+      workspaceInfo,
+      allWorkspaces,
+      currentWorkspace,
+      //
+      getWorkspaceFiles,
+      getFileInfo,
+      fileInfo,
+      WorkspaceFiles,
+      // 
+      filename,
+      selectedTag,
+      createFile,
+      //
+      getOwnerInfo,
 
-              isOwner,
-              MemberNum,
-              options,
+      isOwner,
+      MemberNum,
+      options,
               
-              //
-              validateWorkspaceSelection,
-              validateFileSelection,
-              workspaceOptions,
-              fileOptions,
+      //
+      validateWorkspaceSelection,
+      validateFileSelection,
+      workspaceOptions,
+      fileOptions,
     }
   },
   methods: {

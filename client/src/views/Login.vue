@@ -23,11 +23,7 @@
             </div>
             <div class="col-sm-12 mb-4 form-group">
               <!-- <button :disabled="user.account == '' || user.password == ''" @click.prevent="loginRequest" class="btn btn-primary btn-lg col-sm-4">登入</button> -->
-<<<<<<< HEAD
               <button :disabled="loginUser.account == '' || loginUser.password == ''" @click.prevent="checkUser" class="btn btn-primary btn-lg col-sm-4">Login</button>
-=======
-              <button :disabled="loginUser.account == '' || loginUser.password == ''" @click.prevent="checkUser()" class="btn btn-primary btn-lg col-sm-4">Login</button>
->>>>>>> main
             </div>
             <div class="col-sm-12 form-group">
             <p>Don't have an account? <router-link to="/signup">Signup</router-link></p>
