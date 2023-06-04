@@ -134,10 +134,10 @@ getFileInfo = async (req, res) => {
 }
 
 getFile = async (req, res) => {
-    const file_id = await File.findOne({ _id: req.params.id })
+    // const file_id = await File.findOne({ _id: req.params.id })
     //const file_id = '6478a725732d8d00131eb1cf'
     try {
-        const file = await File.findOne({ _id: file_id })
+        const file = await File.findOne({ _id: req.params.id })
 
         if (!file ) {
             console.count('error: ' + 'File not found');
