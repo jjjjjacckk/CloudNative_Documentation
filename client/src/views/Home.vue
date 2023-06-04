@@ -121,11 +121,11 @@
               <!-- single file -->
               <div v-for="(file, idx) in WorkspaceFiles" :key="idx" class="d-flex flex-column card-body grid-item btn file-card">
                 <div class="text-truncate justify-content-center align-items-center">
-                  <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold">&nbsp;&nbsp;{{file.name}}</span>
+                  <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold">&nbsp;&nbsp;{{file}}</span>
                 </div>
                 <div class="d-grid edit-delete-grid mt-1 justify-content-center align-items-center">
-                  <span class="card-subtitle text-nowrap" style="grid-column:2">owner: {{ getOwnerInfo(file.owner).username }}</span>
-                  <button v-if="getOwnerInfo(file.owner).isOwner" class="btn btn-delete" style="grid-column:3">
+                  <span class="card-subtitle text-nowrap" style="grid-column:2">owner: {{ WorkspaceFiles[idx].filename }}</span>
+                  <button v-if="file.isOwner" class="btn btn-delete" style="grid-column:3">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
@@ -333,26 +333,20 @@
                     </div>
                   </div> -->
                 </div>
-
-
-
               </div>
-              
             </div>
           </div>
         </div>
       </div>
     </div>
-
   </div>
-
-
 </template>
 
 <script>
 import { ref, onMounted } from 'vue'
 import { useRoute , useRouter } from 'vue-router'
 import DropSearch from '../components/dropSearch.vue';
+import { booleanLiteral } from '@babel/types';
 
 export default{
   components:{
@@ -379,7 +373,7 @@ export default{
     // dropsearch data
     const isOwner = ref(true);
     const MemberNum = ref(6);
-    const options = ref(['']);
+    const options = ref(['']); //allWorkspaces: const allWorkspaces = ref([]);
 
     // get user info 
     const myUserInfo = ref({});
@@ -398,53 +392,18 @@ export default{
     }
 
     // get workspace info
-    const currentWorkspace = ref({});
-    const allWorkspaces = ref([]);
+    const myUserWorkspaces = ref([]);
     const workspaceInfo = ref({});
+    const currentWorkspace = ref({});
 
-    const getAllWorkspaces = async() => {
-      //YODO: getAll
-      // for(var wid of myUserInfo.value.workspace){
-      //   await getWorkspaceInfo(wid);
-      //   // if(!allWorkspaces.value.includes(workspaceInfo.value)){
-      //   // }
-      //   allWorkspaces.value.push(workspaceInfo.value);
-      // }
-
-      try {
-        await fetch("http://localhost:3080/api/getAllWorkspace")
-        .then(res => res.json())
-        .then(res => {
-          // console.log(res.data)
-          allWorkspaces.value = res.data;
-        })
+    const getUserWorkspaces = async() => {
+      myUserWorkspaces.value = []
+      for(var wid of myUserInfo.value.workspace){
+        await getWorkspaceInfo(wid);
+          myUserWorkspaces.value.push(workspaceInfo.value);
+        }
       }
-      catch(error) {
-        console.log(error) 
-      }
-    }
-
-    const getCurrentWorkspace = async() => {
-      try {
-        await fetch(`http://localhost:3080/api/getWorkspace/${wid}`)
-        .then(res => res.json())
-        .then(res => {
-          // get new current workspace
-          currentWorkspace.value = res.data;
-          // // update the all workspace list
-
-          // var index = allWorkspaces.value.findIndex((workspace) => workspace._id === wid);
-          // if (index !== -1) {
-          //   allWorkspaces.value[index] = currentWorkspace.value;
-          // }
-          // console.log(index);
-        })
-      }
-      catch {
-        console.log(error)
-      }
-    }
-
+      
     const getWorkspaceInfo = async(wid) => {
       try {
         await fetch(`http://localhost:3080/api/getWorkspace/${wid}`)
@@ -460,15 +419,22 @@ export default{
 
     // get file info
     const WorkspaceFiles = ref([]);
-    const fileInfo = ref({});
+    var fileInfo = ref({
+      id: '',
+      filename: '',
+      tag: [],
+      ownerId: '',
+      ownername: '',
+      isOwner: false,
+    });
 
     const getWorkspaceFiles = async(workspace) => {
       WorkspaceFiles.value = [];
       for(var fid of workspace.files){
         await getFileInfo(fid);
-        // if (!WorkspaceFiles.value.includes(fileInfo.value)) {
-        // }
         WorkspaceFiles.value.push(fileInfo.value);
+        console.log(fileInfo.value)
+        console.log(WorkspaceFiles.value)
       }
     }
 
@@ -478,7 +444,27 @@ export default{
         await fetch(`http://localhost:3080/api/getFile/${fid}`)
         .then(res => res.json())
         .then(res => {
-          fileInfo.value = res.data;
+          fileInfo.value.id = res.data._id;
+          fileInfo.value.filename = res.data.name;
+          fileInfo.value.tag = res.data.tag;
+          fileInfo.value.ownerId = res.data.owner;
+          console.log(fileInfo.value.filename);
+          // console.log(fileInfo.value.id);
+        })
+        .then(()=>{
+          // console.log(fileInfo.value.filename);
+          // console.log(fileInfo.value.id);
+          fetch(`http://localhost:3080/api/getUserName/${fileInfo.value.ownerId}`)
+          .then(res => res.json())
+          .then(res => {
+            fileInfo.value.ownername = res.data;
+            // console.log(fileInfo.value.ownername)
+            if(fileInfo.value.ownername === myUserInfo.value.username){
+              fileInfo.value.isOwner = true;
+              // console.log(fileInfo.value.isOwner)
+            }
+            // console.log(ownerInfo);
+          })
         })
       }
       catch(error) {
@@ -492,14 +478,16 @@ export default{
       wid.value = route.query.wid;
 
       await getUserInfo();
-      await getAllWorkspaces();
-      // console.log(allWorkspaces);
-      //find wid 
-      currentWorkspace.value = allWorkspaces.value.find(element => element._id == wid.value);
-      console.log(currentWorkspace.value);
-      // await getCurrentWorkspace();
+      await getUserWorkspaces();
+      // console.log(myUserWorkspaces.value[0]);
+      // console.log(myUserWorkspaces.value[1]);
+      currentWorkspace.value = myUserWorkspaces.value.find(element => element._id == wid.value);
+      // console.log(currentWorkspace.value);
 
       await getWorkspaceFiles(currentWorkspace.value);
+      // console.log(WorkspaceFiles.value[0])
+      // console.log(WorkspaceFiles.value[1])
+      // console.log(WorkspaceFiles.value[2])
 
     })
 
@@ -524,66 +512,72 @@ export default{
       
       fetch("http://localhost:3080/api/createFile", requestOptions)
         .then(res => {
-          res.json().then(data => { successMessage.value = data.message } )
+          res.json().then(data => { 
+            successMessage.value = data.message 
+          }).then(() => { 
+            getWorkspaceFiles(currentWorkspace.value); 
+            router.go(0);
+          })
         })
-        .then(getCurrentWorkspace())
-        .then(getWorkspaceFiles(currentWorkspace.value))
         .catch(err => {
           err.json().then(data => { errorMessage.value = data.message } )
         })
     }
 
     // get file owner name
-    const getOwnerInfo = async(ownerId) => {
-      const ownerInfo = {
-        username: '',
-        isOwner: false,
-      };
-      try {
-        await fetch(`http://localhost:3080/api/getUserInfo/${ownerId}`)
-        .then(res => res.json())
-        .then(res => {
-          ownerInfo.username = res.data.username;
-          if(ownerInfo.username === myUserInfo.value.username){
-            ownerInfo.isOwner = true;
-          }
-          // console.log(ownerInfo);
-          return ownerInfo;
-        })
-      }
-      catch(error) {
-        console.log(error);
-        return null;
-      }
-    }
-
-
+    const ownerInfo = ref({
+      username: '',
+      isOwner: false,
+    });
+    // const getOwnerInfo = async(ownerId) => {
+    //   const ownerInfo = {
+    //     username: '',
+    //     isOwner: false,
+    //   };
+    //   try {
+    //     await fetch(`http://localhost:3080/api/getUserName/${ownerId}`)
+    //     .then(res => res.json())
+    //     .then(res => {
+    //       ownerInfo.username = res.data;
+    //       console.log(ownerInfo.username)
+    //       if(ownerInfo.username === myUserInfo.value.username){
+    //         ownerInfo.isOwner = true;
+    //         console.log(ownerInfo.isOwner)
+    //       }
+    //       // console.log(ownerInfo);
+    //       return ownerInfo.json();
+    //     })
+    //   }
+    //   catch(error) {
+    //     console.log(error);
+    //     return null;
+    //   }
+    // }
 
     return {
       errorMessage,
       successMessage,
       //
       uid,
+      wid,
       getUserInfo,
       myUserInfo,
       //
-      getAllWorkspaces,
-      getWorkspaceInfo,
-      getCurrentWorkspace,
-      workspaceInfo,
-      allWorkspaces,
+      myUserWorkspaces,
       currentWorkspace,
+      getUserWorkspaces,
       //
+      WorkspaceFiles,
+      fileInfo,
       getWorkspaceFiles,
       getFileInfo,
-      fileInfo,
-      WorkspaceFiles,
       // 
       filename,
       selectedTag,
       createFile,
       //
-      getOwnerInfo,
+      ownerInfo,
+      // getOwnerInfo,
 
       isOwner,
       MemberNum,
@@ -606,6 +600,24 @@ export default{
         
       // }
     },
+    // getOwnerInfo(ownerId) {
+    //   try {
+    //     fetch(`http://localhost:3080/api/getUserName/${ownerId}`)
+    //     .then(res => res.json())
+    //     .then(res => {
+    //       this.ownerInfo.username = res.data;
+    //       console.log(this.ownerInfo.username)
+    //       if(this.ownerInfo.username === this.myUserInfo.username){
+    //         this.ownerInfo.isOwner = true;
+    //         console.log(this.ownerInfo.isOwner)
+    //       }
+    //       // console.log(ownerInfo);
+    //     })
+    //   }
+    //   catch(error) {
+    //     console.log(error);
+    //   }
+    // },
   },
 }
 </script>
