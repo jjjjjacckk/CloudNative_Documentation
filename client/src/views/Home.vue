@@ -88,7 +88,7 @@
       <p>{{myUserInfo}}</p>
       <p>{{currentWorkspace}}</p>
       <!-- <p>{{getOwnerInfo(uid)}}</p> -->
-      <!-- <p>{{allFiles}}</p> -->
+      <!-- <p>{{WorkspaceFiles}}</p> -->
       <div class="card border-0">
         <div class="card-body" style="padding-left:32px">
           <div class="col-1">
@@ -119,7 +119,7 @@
           <div class="card-body">
             <div class="d-grid file-grid">
               <!-- single file -->
-              <div v-for="(file, idx) in allFiles" :key="idx" class="d-flex flex-column card-body grid-item btn file-card">
+              <div v-for="(file, idx) in WorkspaceFiles" :key="idx" class="d-flex flex-column card-body grid-item btn file-card">
                 <div class="text-truncate justify-content-center align-items-center">
                   <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold">&nbsp;&nbsp;{{file.name}}</span>
                 </div>
@@ -459,16 +459,16 @@ export default{
     }
 
     // get file info
-    const allFiles = ref([]);
+    const WorkspaceFiles = ref([]);
     const fileInfo = ref({});
 
-    const getAllFiles = async(workspace) => {
-      //YODO: getAll
+    const getWorkspaceFiles = async(workspace) => {
+      WorkspaceFiles.value = [];
       for(var fid of workspace.files){
         await getFileInfo(fid);
-        // if (!allFiles.value.includes(fileInfo.value)) {
+        // if (!WorkspaceFiles.value.includes(fileInfo.value)) {
         // }
-        allFiles.value.push(fileInfo.value);
+        WorkspaceFiles.value.push(fileInfo.value);
       }
     }
 
@@ -499,7 +499,7 @@ export default{
       console.log(currentWorkspace.value);
       // await getCurrentWorkspace();
 
-      await getAllFiles(currentWorkspace.value);
+      await getWorkspaceFiles(currentWorkspace.value);
 
     })
 
@@ -527,7 +527,7 @@ export default{
           res.json().then(data => { successMessage.value = data.message } )
         })
         .then(getCurrentWorkspace())
-        .then(getAllFiles(currentWorkspace.value))
+        .then(getWorkspaceFiles(currentWorkspace.value))
         .catch(err => {
           err.json().then(data => { errorMessage.value = data.message } )
         })
@@ -574,10 +574,10 @@ export default{
       allWorkspaces,
       currentWorkspace,
       //
-      getAllFiles,
+      getWorkspaceFiles,
       getFileInfo,
       fileInfo,
-      allFiles,
+      WorkspaceFiles,
       // 
       filename,
       selectedTag,
