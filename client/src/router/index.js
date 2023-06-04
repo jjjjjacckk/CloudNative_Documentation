@@ -15,19 +15,15 @@ const routes = [
     name: 'signup',
     component: SignUp
   },
-  // {
-  //   path: '/home',
-  //   name: 'home',
-  //   component: Home
-  // },
   {
     path: '/home/:id',
     name: 'home',
     component: Home
   },
   {
-    path: '/file',
+    path: '/home/:uid/file/:fid',
     name: 'file',
+    props: true,
     component: SingleFile
   }
 ]
