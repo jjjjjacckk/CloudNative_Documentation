@@ -371,13 +371,14 @@ export default{
     const router = useRouter();
 
     const uid = ref('');
+    const wid = ref('');
 
     const errorMessage = ref('')
     const successMessage = ref('')
 
+    // dropsearch data
     const isOwner = ref(true);
     const MemberNum = ref(6);
-    
     const options = ref(['']);
 
     // get user info 
@@ -400,6 +401,50 @@ export default{
     const currentWorkspace = ref({});
     const allWorkspaces = ref([]);
     const workspaceInfo = ref({});
+
+    const getAllWorkspaces = async() => {
+      //YODO: getAll
+      // for(var wid of myUserInfo.value.workspace){
+      //   await getWorkspaceInfo(wid);
+      //   // if(!allWorkspaces.value.includes(workspaceInfo.value)){
+      //   // }
+      //   allWorkspaces.value.push(workspaceInfo.value);
+      // }
+
+      try {
+        await fetch("http://localhost:3080/api/getAllWorkspace")
+        .then(res => res.json())
+        .then(res => {
+          // console.log(res.data)
+          allWorkspaces.value = res.data;
+        })
+      }
+      catch(error) {
+        console.log(error) 
+      }
+    }
+
+    const getCurrentWorkspace = async() => {
+      try {
+        await fetch(`http://localhost:3080/api/getWorkspace/${wid}`)
+        .then(res => res.json())
+        .then(res => {
+          // get new current workspace
+          currentWorkspace.value = res.data;
+          // // update the all workspace list
+
+          // var index = allWorkspaces.value.findIndex((workspace) => workspace._id === wid);
+          // if (index !== -1) {
+          //   allWorkspaces.value[index] = currentWorkspace.value;
+          // }
+          // console.log(index);
+        })
+      }
+      catch {
+        console.log(error)
+      }
+    }
+
     const getWorkspaceInfo = async(wid) => {
       try {
         await fetch(`http://localhost:3080/api/getWorkspace/${wid}`)
@@ -413,39 +458,20 @@ export default{
       }
     }
 
-    const getAllWorkspaces = async() => {
-      for(var wid of myUserInfo.value.workspace){
-        await getWorkspaceInfo(wid);
-        // if(!allWorkspaces.value.includes(workspaceInfo.value)){
-        // }
-        allWorkspaces.value.push(workspaceInfo.value);
-      }
-    }
-
-    const getCurrentWorkspace = async() => {
-      try {
-        var wid = currentWorkspace.value._id;
-        await fetch(`http://localhost:3080/api/getWorkspace/${wid}`)
-        .then(res => res.json())
-        .then(res => {
-          // get new current workspace
-          currentWorkspace.value = res.data;
-          // update the all workspace list
-          var index = allWorkspaces.value.findIndex((workspace) => workspace._id === wid);
-          if (index !== -1) {
-            allWorkspaces.value[index] = currentWorkspace.value;
-          }
-          // console.log(index);
-        })
-      }
-      catch {
-        console.log(error)
-      }
-    }
-
     // get file info
     const allFiles = ref([]);
     const fileInfo = ref({});
+
+    const getAllFiles = async(workspace) => {
+      //YODO: getAll
+      for(var fid of workspace.files){
+        await getFileInfo(fid);
+        // if (!allFiles.value.includes(fileInfo.value)) {
+        // }
+        allFiles.value.push(fileInfo.value);
+      }
+    }
+
     const getFileInfo = async(fid) => {
       try {
         // console.log(fid);
@@ -460,23 +486,17 @@ export default{
       }
     }
 
-    const getAllFiles = async(workspace) => {
-      for(var fid of workspace.files){
-        await getFileInfo(fid);
-        // if (!allFiles.value.includes(fileInfo.value)) {
-        // }
-        allFiles.value.push(fileInfo.value);
-      }
-    }
-
     // on Mounted
-
     onMounted(async() => {
       uid.value = route.params.id;
+      wid.value = route.query.wid;
+
       await getUserInfo();
       await getAllWorkspaces();
       // console.log(allWorkspaces);
-      currentWorkspace.value = allWorkspaces.value[0];
+      //find wid 
+      currentWorkspace.value = allWorkspaces.value.find(element => element._id == wid.value);
+      console.log(currentWorkspace.value);
       // await getCurrentWorkspace();
 
       await getAllFiles(currentWorkspace.value);

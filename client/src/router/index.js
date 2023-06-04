@@ -15,11 +15,6 @@ const routes = [
     name: 'signup',
     component: SignUp
   },
-  // {
-  //   path: '/home',
-  //   name: 'home',
-  //   component: Home
-  // },
   {
     path: '/home/:id',
     name: 'home',
