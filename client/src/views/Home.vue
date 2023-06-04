@@ -256,7 +256,7 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title">Search Workspace</h4>
-                <button class="btn btn-close" data-bs-dismiss="modal"></button>
+                <button ref="leavebtn" class="btn btn-close" data-bs-dismiss="modal"></button>
               </div>
               
               <div class="modal-body">
@@ -303,6 +303,8 @@ export default{
 
     const errorMessage = ref('')
     const successMessage = ref('')
+
+    const leavebtn = ref(null);
 
     // dropsearch data
     const isOwner = ref(true);
@@ -375,6 +377,8 @@ export default{
         }
 
       } 
+      // document.getElementById('workspaceModal').close();
+      leavebtn.value.click();
     }
 
     const validateTagSelection = async(selection) => {
@@ -645,6 +649,7 @@ export default{
     return {
       errorMessage,
       successMessage,
+      leavebtn,
       //
       uid,
       wid,
