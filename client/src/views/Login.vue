@@ -111,21 +111,19 @@ export default{
     
     const checkUser = () => {
       // console.log(AllUser.value.length)
-      
+    
       if(!AllUser.value.length) {
         errorMessage.value = 'account not exist';
-      } else{
-        if(matchAcc.password == loginUser.value.password){
-          errorMessage.value = '';
-          console.log('success');
-
-          var authID = matchAcc._id;
-          router.push('/home/' + authID);
+      }
+      else {
+        var matchAcc = AllUser.value.find(element => element.account == loginUser.value.account);
+        if(matchAcc == undefined){
+          errorMessage.value = 'account not exist';
         } else{
           if(matchAcc.password == loginUser.value.password){
             errorMessage.value = '';
             console.log('success');
-            
+  
             var authID = matchAcc._id;
             router.push('/home/' + authID);
           } else{
@@ -133,7 +131,6 @@ export default{
           }
         }
       }
-
     }
     
     // getAllUser()
