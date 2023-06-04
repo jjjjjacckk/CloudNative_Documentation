@@ -12,7 +12,7 @@
       :placeholder="placeholder" />
 
     <!-- Dropdown Menu -->
-    <div class="dropdown-content"
+    <div class="dropdown-content" onfocus="this.size=3;"
       v-show="optionsShown">
       <div
         class="dropdown-item"
@@ -149,7 +149,7 @@
 .dropdown-content {
   position: absolute;
   background-color: #fff;
-  width: 95%;
+  width: 90%;
   border: 1px solid #e7ecf5;
   box-shadow: 0px -8px 34px 0px rgba(0,0,0,0.05);
   overflow: auto;

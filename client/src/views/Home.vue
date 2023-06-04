@@ -94,65 +94,55 @@
       <!-- <p>{{getOwnerInfo(uid)}}</p> -->
       <!-- <p>{{WorkspaceFiles}}</p> -->
       <div class="card border-0">
-        <div class="card-body" style="padding-left:32px">
-          <div class="col-1">
-            <select class="form-select">
-              <option value="" selected disabled>Tags</option>
-              <option value="all">All</option>
-              <option value="untagged">Untagged</option>
-              <option value="tag1">Tag1</option>
-              <option value="tag2">Tag2</option>
+        <div class="card-body pb-1" style="padding-left:32px">
+          <div class="col-1 selectWrapper p-2">
+            <select class="form-select" v-model="filterSelectedTag" 
+                    onfocus='this.size=4;' onblur='this.size=1;' onchange='this.size=1; this.blur();'>
+              <option value="all">All</option> 
+              <!-- <option value="untagged">Untagged</option>  -->
+              <option v-for="(tag, idx) in tagOptions" :key="idx" :value="tag.name">{{ tag.name }}</option>
             </select>
           </div>
         </div>
         <!-- tag 1-->
-        <div class="card-body">
-          <!-- show tag -->
-          <div class="card-body row align-items-center">
-            <div class="col">
-              <hr class="w-100">
-            </div>
-            <div class="col px-0">
-              <h2 class="fw-bolder" style="color:#2c3e50;">Untagged</h2>
-            </div>
-            <div class="col">
-              <hr class="w-100">
-            </div>
-          </div>
-          <!-- show files-->
-          <div class="card-body">
-            <div class="d-grid file-grid">
-              <!-- single file -->
-              <div v-for="(file, idx) in WorkspaceFiles" :key="idx" class="d-flex flex-column card-body grid-item btn file-card">
-                <div class="text-truncate justify-content-center align-items-center">
-                  <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold">&nbsp;&nbsp;{{file.filename}}</span>
-                </div>
-                <div class="d-grid edit-delete-grid mt-1 justify-content-center align-items-center">
-                  <span class="card-subtitle text-nowrap" style="grid-column:2">owner: {{ file.ownername }}</span>
-                  <button v-if="file.isOwner" class="btn btn-delete" style="grid-column:3">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-                <router-link :to="{ path: `/home/${uid}/file/${file._id}`, query: { wid: currentWorkspace._id }}" class="btn btn-edit mt-1">
-                  <i class="fa-solid fa-pen-to-square"></i> Edit
-                </router-link>
+        <div class="card-body" v-for="(tag, idx) in tagOptions.filter(i => {if (i.name == filterSelectedTag || filterSelectedTag == 'all') return i; })" :key="idx">
+          <!-- <div v-if="filterSelectedTag == tag.name">  -->
+            <!-- show tag -->
+            <div class="card-body row align-items-center">
+              <div class="col">
+                <hr class="w-100">
               </div>
-              <!-- <div class="d-flex flex-column card-body grid-item btn file-card">
-                <div class="text-truncate justify-content-center align-items-center">
-                  <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold"> File1</span>
-                </div>
-                <div class="d-grid edit-delete-grid mt-1 justify-content-center align-items-center">
-                  <span class="card-subtitle text-nowrap" style="grid-column:2">owner: user1</span>
-                  <button v-if="isOwner" class="btn btn-delete" style="grid-column:3">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-                <router-link to="/file" class="btn btn-edit mt-1">
-                  <i class="fa-solid fa-pen-to-square"></i> Edit
-                </router-link>
-              </div> -->
+              <div class="col px-0">
+                <h2 class="fw-bolder" style="color:#2c3e50;"> {{ tag.name }} </h2>
+              </div>
+              <div class="col">
+                <hr class="w-100">
+              </div>
             </div>
-          </div>
+            <!-- show files-->
+            <div class="card-body">
+              <div class="d-grid file-grid">
+                <!-- single file -->
+                <div v-for="(file, idx) in getFilteredWorkspaceFiles(tag.name)" :key="idx" class="d-flex flex-column card-body grid-item btn file-card">
+                  <!-- <div v-if="file.tag[0] == tag.name">  -->
+                  <div> 
+                    <div class="text-truncate justify-content-center align-items-center">
+                      <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold">&nbsp;&nbsp;{{file.filename}}</span>
+                    </div>
+                    <div class="d-grid edit-delete-grid mt-1 justify-content-center align-items-center">
+                      <span class="card-subtitle text-nowrap" style="grid-column:2">owner: {{ file.ownername }}</span>
+                      <button v-if="file.isOwner" class="btn btn-delete" style="grid-column:3">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
+                    <router-link :to="{ path: `/home/${uid}/file/${file._id}`, query: { wid: currentWorkspace._id }}" class="btn btn-edit mt-1">
+                      <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </router-link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <!-- </div> -->
         </div>
       </div>
     </div>
@@ -241,8 +231,9 @@
                 </div>
                 <div class="card-body">
                   <div class="container my-2">
+                    <!-- use filter to avoid "untagged" to be shown -->
                     <dropSearchTag class="form-control mb-2 mt-0" 
-                                :options="tagOptions"
+                                :options="tagOptions.filter(i => {if (!i.name.includes('untagged')) return i;})" 
                                 :disabled="false"
                                 :placeholder="'Search Tag...'"
                                 v-on:selected="validateTagSelection">
@@ -336,8 +327,8 @@ export default{
     const fileOptions = ref([]); // [ {name: '', id: ''} ]
 
     const validateWorkspaceSelection = async(selection) => {
-      console.log('[validate Workspace Selection] ' + selection.name + " has been selected with wid = " + selection.id);
-      console.log(" uid = " + uid.value + " wid = " + wid.value);
+      // console.log('[validate Workspace Selection] ' + selection.name + " has been selected with wid = " + selection.id);
+      // console.log(" uid = " + uid.value + " wid = " + wid.value);
       if(selection.name != undefined) {
         if (selection.name.includes('Create')) {
           // create workspace
@@ -388,8 +379,8 @@ export default{
     }
 
     const validateTagSelection = async(selection) => {
-      console.log('[validate Tag Selection] ' + selection.name + " has been selected with wid = " + selection.id);
-      console.log(" uid = " + uid.value + " wid = " + wid.value);
+      // console.log('[validate Tag Selection] ' + selection.name + " has been selected with wid = " + selection.id);
+      // console.log(" uid = " + uid.value + " wid = " + wid.value);
       if(selection.name != undefined) {
         var newTagName = selection.name
         if (selection.name.includes('Create')) {
@@ -407,7 +398,7 @@ export default{
     }
 
     const validateFileSelection = async(selection) => {
-      console.log('[validate File Selection] ' + selection.name + " has been selected with fid = " + selection.id);
+      // console.log('[validate File Selection] ' + selection.name + " has been selected with fid = " + selection.id);
       if(selection.name != undefined) {
         // goto file edit (selection.id <- file id)
         // console.log('url = ' + '/home/' + uid.value + '/file/' + selection.id + '?wid=' + wid.value);
@@ -436,8 +427,8 @@ export default{
         .then(res => res.json())
         .then(res => {
           for (var tag of res.data) {
-            console.log('[getTagOptions] ', tag.tag, tag._id, tagOptions.value.some(dic => dic.name == tag.tag));
-            if (!tag.tag.includes('untagged') && !tagOptions.value.some(dic => dic.name == tag.tag)) {
+            // some() = to avoid duplicate tags
+            if (!tagOptions.value.some(dic => dic.name == tag.tag)) {
               tagOptions.value.push({name: tag.tag, id: tag._id});
             }
           }
@@ -453,7 +444,7 @@ export default{
       for(var files of WorkspaceFiles.value) {
         fileOptions.value.push({name: files.filename, id: files.id});
       }
-      console.log('[getFileOptions] ', WorkspaceFiles.value, fileOptions.value)
+      // console.log('[getFileOptions] ', WorkspaceFiles.value, fileOptions.value);
     }
 
     // get user info 
@@ -500,6 +491,18 @@ export default{
 
     // get file info
     const WorkspaceFiles = ref([]);
+
+    const getFilteredWorkspaceFiles = (tag) => {
+      var filtered = [];
+      for(var file of WorkspaceFiles.value) {
+        if (file.tag.includes(tag)) {
+          filtered.push(file);
+        }
+      }
+      
+      return filtered;
+    }
+
     const getWorkspaceFiles = async(workspace) => {
       WorkspaceFiles.value = [];
       for(var fid of workspace.files) {
@@ -528,7 +531,7 @@ export default{
           fileInfo.value.filename = res.data.name;
           fileInfo.value.tag = res.data.tag;
           fileInfo.value.ownerId = res.data.owner;
-          // console.log(fileInfo.value.id);
+          // console.log(fileInfo.value.tag, res.data.tag.number);
         })
         .then(()=>{
           // console.log(fileInfo.value.filename);
@@ -554,6 +557,7 @@ export default{
     }
 
 
+
     // on Mounted
     onMounted(async() => {
       uid.value = route.params.id;
@@ -574,6 +578,8 @@ export default{
     // create file
     const filename = ref('');
     const selectedTag = ref(['untagged']);
+    const filterSelectedTag = ref('all')
+
     const createFile = async() => { 
 
       const requestOptions = {
@@ -644,7 +650,7 @@ export default{
       getUserWorkspaces,
       //
       WorkspaceFiles,
-      // fileInfo,
+      getFilteredWorkspaceFiles,
       getWorkspaceFiles,
       getFileInfo,
       // 
@@ -662,6 +668,7 @@ export default{
       validateTagSelection,
       //
       leaveWorkspace,
+      filterSelectedTag,
     }
   },
   methods: {
@@ -788,6 +795,11 @@ export default{
   background-color: #90be6d;
   margin: 1px;
   text-align: center;
+}
+.selectWrapper{
+  width:200px;
+  padding:20px;
+  height: 90px;
 }
 
 </style>
