@@ -13,6 +13,13 @@
                     v-on:selected="validateFileSelection">
         </dropSearchFile>
 
+        <dropSearchTag class="form-control mb-2 mt-0" 
+                    :options="tagOptions"
+                    :disabled="false"
+                    :placeholder="'Search Tag...'"
+                    v-on:selected="validateTagSelection">
+        </dropSearchTag>
+
         <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#aboutModal">
           <i class="fa-solid fa-lightbulb" style="width:23px"></i> About
         </button>
@@ -206,7 +213,9 @@
               </div>
 
               <div class="modal-footer">
-                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Leave</button>
+                <button @click="leaveWorkspace" type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
+                  Leave
+                </button>
               </div>
             </div>
           </div>
@@ -303,6 +312,7 @@
 <script>
 import dropSearchWorkspace from '../components/dropSearchWorkspace.vue';
 import dropSearchFile from '../components/dropSearchFile.vue';
+import dropSearchTag from '../components/dropSearchTag.vue';
 import { ref, onMounted } from 'vue'
 import { useRoute , useRouter } from 'vue-router'
 
@@ -311,6 +321,7 @@ export default{
   components:{
     'dropSearchWorkspace':dropSearchWorkspace,
     'dropSearchFile':dropSearchFile,
+    'dropSearchTag':dropSearchTag,
   },
   data() {
     return {
@@ -330,7 +341,88 @@ export default{
     // dropsearch data
     const isOwner = ref(true);
     const MemberNum = ref(6);
-    const options = ref(['']);
+    const workspaceOptions = ref( [{name: 'jack', id: '647b4c73ad70df001ac25468'}] ); // [ {name: '', id: ''} ]
+    const tagOptions = ref( [{name: 'jack', id: '647b4c73ad70df001ac25468'}] ); // [ {name: '', id: ''} ]
+    const fileOptions = ref([{name: 'Jack', id: '647c406e69c85800134e472b'}, 
+                             {name: 'qwe', id: '647c491a95652a001a5e1aca'},
+                             {name: '123', id: '647c4d573ef8ed001383503d'}]); // [ {name: '', id: ''} ]
+
+    const validateWorkspaceSelection = async(selection) => {
+      console.log(selection.name + " has been selected with wid = " + selection.id);
+      console.log(" uid = " + uid.value + " wid = " + wid.value);
+      if(selection.name != undefined) {
+        if (selection.name.includes('Create')) {
+          // create workspace
+          console.log("name = " + selection.name.substring(8));
+          var newWorkspaceName = selection.name.substring(8);
+
+          const requestOptions = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+              // "auth-token": state.token
+            },
+            body: JSON.stringify({
+              name: newWorkspaceName,
+              members: uid.value
+            }) 
+          }
+
+          fetch("http://localhost:3080/api/createWorkspace" , requestOptions)
+          // .then(GetAllTodos())
+            .then(res => res.body ) // redundant
+            .then(res => {console.log(res); }) // redundant
+            // router.push('/todos')
+        } else {
+          // join workspace
+          const requestOptions = {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+              // "auth-token": state.token
+            },
+            body: JSON.stringify({
+              id: uid.value
+            }) 
+          }
+
+          fetch("http://localhost:3080/api/joinWorkspace/" + selection.id , requestOptions)
+          // .then(GetAllTodos())
+            .then(res =>  res.body) // redundant
+            .then(res => {console.log(res.data)}) // redundant
+            // router.push('/todos')
+        }
+
+      } 
+    }
+
+    const validateTagSelection = async(selection) => {
+      console.log(selection.name + " has been selected with wid = " + selection.id);
+      console.log(" uid = " + uid.value + " wid = " + wid.value);
+      if(selection.name != undefined) {
+        var newTagName = selection.name
+        if (selection.name.includes('Create')) {
+          // Create Tag
+          console.log("name = " + selection.name.substring(8));
+          newTagName = selection.name.substring(8);
+        } 
+        
+        console.log("newTagName = " + newTagName);
+        if (selectedTag.value.includes('untagged')) 
+          selectedTag.value = []
+        selectedTag.value.push(newTagName)
+        console.log("selectedTag = " + selectedTag.value);
+      } 
+    }
+
+    const validateFileSelection = async(selection) => {
+      console.log(selection.name + " has been selected with fid = " + selection.id);
+      if(selection.name != undefined) {
+        // goto file edit (selection.id <- file id)
+        // console.log('url = ' + '/home/' + uid.value + '/file/' + selection.id + '?wid=' + wid.value);
+        router.push('/home/' + uid.value + '/file/' + selection.id + '?wid=' + wid.value);
+      } 
+    }
 
     // get user info 
     const myUserInfo = ref({});
@@ -352,6 +444,7 @@ export default{
     const currentWorkspace = ref({});
     const allWorkspaces = ref([]);
     const workspaceInfo = ref({});
+    
 
     const getAllWorkspaces = async() => {
       //YODO: getAll
@@ -412,7 +505,7 @@ export default{
     // get file info
     const WorkspaceFiles = ref([]);
     const fileInfo = ref({});
-
+    
     const getWorkspaceFiles = async(workspace) => {
       WorkspaceFiles.value = [];
       for(var fid of workspace.files){
@@ -437,6 +530,7 @@ export default{
       }
     }
 
+
     // on Mounted
     onMounted(async() => {
       uid.value = route.params.id;
@@ -451,13 +545,12 @@ export default{
       // await getCurrentWorkspace();
 
       await getWorkspaceFiles(currentWorkspace.value);
-
     })
 
     // create file
     const filename = ref('');
     const selectedTag = ref(['untagged']);
-    const createFile = () => { 
+    const createFile = async() => { 
 
       const requestOptions = {
         method: "POST",
@@ -508,64 +601,31 @@ export default{
       }
     }
 
-    // drop search file & workspace
-    const workspaceOptions = ref([{name: 'jack1', id: '123123'}, {name: 'jack2', id: '123123'}, {name: 'jack3', id: '123123'}, 
-                                  {name: 'jack4', id: '123123'}, {name: 'jack5', id: '123123'}, {name: 'jack6', id: '123123'}, 
-                                  {name: 'jack7', id: '123123'}, {name: 'jack8', id: '123123'}, {name: 'jack9', id: '123123'}]); // [ {name: '', id: ''} ]
-    const fileOptions = ref([{name: 'jack8', id: '123123'}, {name: 'jack9', id: '123123'}, {name: 'jack0', id: '123123'}, 
-                             {name: 'jack4', id: '123123'}, {name: 'jack5', id: '123123'}, {name: 'jack6', id: '123123'},
-                             {name: 'jack7', id: '123123'}, {name: 'jack8', id: '123123'}, {name: 'jack9', id: '123123'}]); // [ {name: '', id: ''} ]
-
-    const validateWorkspaceSelection = (selection) => {
-      console.log(selection.name + " has been selected");
-      if(selection.name != undefined) {
-        if (selection.name.includes('Create')) {
-          // create workspace
-          // console.log("should create workspace");
-          // const requestOptions = {
-          //   method: "PUT",
-          //   headers: {
-          //     "Content-Type": "application/json"
-          //     // "auth-token": state.token
-          //   },
-          //   body: JSON.stringify({
-          //     name: selection.name,
-          //     members: uid
-          //   }) 
-          // }
-
-          // fetch("http://localhost:3000/api/createWorkspace" , requestOptions)
-          // // .then(GetAllTodos())
-          //   .then(res =>  res.body) // redundant
-          //   .then(res => {console.log(res)}) // redundant
-          //   router.push('/todos')
-        } else {
-          // join workspace
-          // fetch("http://localhost:3080/api/joinWorkspace/" + _workspaceid)
-          //   .then(res => {
-          //     res.json().then(data => { successMessage.value = data.message } )
-          //   })
-          //   .catch(err => {
-          //     err.json().then(data => { errorMessage.value = data.message } )
-          //   })
+    // leave workspace
+    const leaveWorkspace = async() => {
+      try {
+        const requestOptions = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+            // "auth-token": state.token
+          },
+          body: JSON.stringify({
+            id: uid.value
+          }) 
         }
 
+        console.log('leave workspace');
+
+        // fetch(`http://localhost:3080/api/leaveWorkspace/${wid.value}`, requestOptions)
+        // // .then(GetAllTodos())
+        //   .then(res =>  res.body) // redundant
+        //   .then(res => {console.log(res.data)}) // redundant
+        //   router.push('/todos')
+      } catch(error) {
+        console.log(error);
       } 
     }
-
-    const validateFileSelection = (selection) => {
-      const route = useRoute();
-      const router = useRouter();
-
-
-      console.log(selection.name + " has been selected");
-      if(selection.name != undefined) {
-        // goto file edit (selection.id <- file id)
-        // router.push('/file');
-      } 
-    }
-
-
 
     return {
       errorMessage,
@@ -592,16 +652,17 @@ export default{
       createFile,
       //
       getOwnerInfo,
-
-      isOwner,
-      MemberNum,
-      options,
-              
       //
-      validateWorkspaceSelection,
-      validateFileSelection,
+      isOwner,
+      MemberNum,              
       workspaceOptions,
       fileOptions,
+      tagOptions,
+      validateWorkspaceSelection,
+      validateFileSelection,
+      validateTagSelection,
+      //
+      leaveWorkspace,
     }
   },
   methods: {
