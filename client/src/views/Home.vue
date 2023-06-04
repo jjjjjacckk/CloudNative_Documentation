@@ -284,64 +284,11 @@
                               :placeholder="'Workspace name...'"
                               v-on:selected="validateWorkspaceSelection">
                   </dropSearchWorkspace>
-                  <button class="btn btn-text-color btn-outline-dark text-nowrap my-2" @click="createWorkspaceModal=true">
+                  <!-- <button class="btn btn-text-color btn-outline-dark text-nowrap my-2" @click="createWorkspaceModal=true">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                  </button>
-
-                  <!--  <div class="card-body" style="height: 500px; overflow-y:scroll">
-                    <div class="table-responsive">
-                      <table class="table table-striped align-middle text-nowrap">
-                        <thead>
-                          <tr class="align-middle" style="background-color:#2c3e50; color:white">
-                            <th scope="col">比賽</th>
-                            <th scope="col">攻擊<br>得分</th>
-                            <th scope="col">攔網<br>得分</th>
-                            <th scope="col">發球<br>得分</th>
-                            <th scope="col">總得<br>分</th>
-                            <th scope="col">攻擊<br>失誤</th>
-                            <th scope="col">舉球<br>失誤</th>
-                            <th scope="col">觸網<br>失誤</th>
-                            <th scope="col">接發<br>失誤</th>
-                            <th scope="col">發球<br>失誤</th>
-                            <th scope="col">總失<br>分</th>
-                          </tr>
-                        </thead>
-                        <tbody v-if="profile.StatisticsList[0]!=''">
-                          <tr v-for="(statistic,idx) in profile.StatisticsList" :key="idx">
-                            <td>
-                              <div class="text-center">
-                                <p class="mb-0">{{statistic.contest}}</p>
-                                <p class="mb-1">{{statistic.teamName}}&nbsp;<span class="badge bg-main">vs</span>&nbsp;{{statistic.opponent}}</p>
-                                <p class="mb-0 opacity-75">{{statistic.date}}</p>
-                                <p class="mb-0 opacity-75">{{statistic.gameScore}}</p>
-                              </div>
-                            </td>
-                            <td class="border-start">{{statistic.attackPoint}}</td>
-                            <td>{{statistic.blockPoint}}</td>
-                            <td>{{statistic.servicePoint}}</td>
-                            <td class="border-start">{{statistic.attackPoint + statistic.blockPoint + statistic.servicePoint}}</td>
-                            <td class="border-start">{{statistic.attackError}}</td>
-                            <td>{{statistic.tossError}}</td>
-                            <td>{{statistic.blockError}}</td>
-                            <td>{{statistic.receiveError}}</td>
-                            <td>{{statistic.serviceError}}</td>
-                            <td class="border-start">{{statistic.attackError + statistic.tossError + statistic.blockError + statistic.receiveError + statistic.serviceError}}</td>
-                          </tr>
-                        </tbody>
-                        <tbody v-else>
-                          <tr>
-                            <td v-for="idx in 11" :key="idx"> - </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div> -->
+                  </button> -->
                 </div>
-
-
-
               </div>
-              
             </div>
           </div>
         </div>
@@ -367,15 +314,7 @@ export default{
   },
   data() {
     return {
-      createWorkspaceModal: false,
-      isOwner: true,
-      MemberNum: 6,
-      workspaceOptions: [ {name: 'jack1', id: '123123'}, {name: 'jack2', id: '123123'}, {name: 'jack3', id: '123123'},
-                          {name: 'jack4', id: '123123'}, {name: 'jack5', id: '123123'}, {name: 'jack6', id: '123123'},
-                          {name: 'jack7', id: '123123'}, {name: 'jack8', id: '123123'}, {name: 'jack9', id: '123123'}], // [ {name: '', id: ''} ]
-      fileOptions: [{name: 'jack8', id: '123123'}, {name: 'jack9', id: '123123'}, {name: 'jack0', id: '123123'},
-                    {name: 'jack4', id: '123123'}, {name: 'jack5', id: '123123'}, {name: 'jack6', id: '123123'},
-                    {name: 'jack7', id: '123123'}, {name: 'jack8', id: '123123'}, {name: 'jack9', id: '123123'}], // [ {name: '', id: ''} ]
+      
     }
   },
   setup() {
@@ -549,22 +488,48 @@ export default{
       }
     }
 
+    // drop search file & workspace
+    const workspaceOptions = ref([{name: 'jack1', id: '123123'}, {name: 'jack2', id: '123123'}, {name: 'jack3', id: '123123'}, 
+                                  {name: 'jack4', id: '123123'}, {name: 'jack5', id: '123123'}, {name: 'jack6', id: '123123'}, 
+                                  {name: 'jack7', id: '123123'}, {name: 'jack8', id: '123123'}, {name: 'jack9', id: '123123'}]); // [ {name: '', id: ''} ]
+    const fileOptions = ref([{name: 'jack8', id: '123123'}, {name: 'jack9', id: '123123'}, {name: 'jack0', id: '123123'}, 
+                             {name: 'jack4', id: '123123'}, {name: 'jack5', id: '123123'}, {name: 'jack6', id: '123123'},
+                             {name: 'jack7', id: '123123'}, {name: 'jack8', id: '123123'}, {name: 'jack9', id: '123123'}]); // [ {name: '', id: ''} ]
+
     const validateWorkspaceSelection = (selection) => {
       console.log(selection.name + " has been selected");
       if(selection.name != undefined) {
         if (selection.name.includes('Create')) {
           // create workspace
-          console.log("should create workspace");
-        } 
+          // console.log("should create workspace");
+          // const requestOptions = {
+          //   method: "PUT",
+          //   headers: {
+          //     "Content-Type": "application/json"
+          //     // "auth-token": state.token
+          //   },
+          //   body: JSON.stringify({
+          //     name: selection.name,
+          //     members: uid
+          //   }) 
+          // }
 
-        // join workspace
-        // fetch("http://localhost:3080/api/joinWorkspace/" + _workspaceid)
-        //   .then(res => {
-        //     res.json().then(data => { successMessage.value = data.message } )
-        //   })
-        //   .catch(err => {
-        //     err.json().then(data => { errorMessage.value = data.message } )
-        //   })
+          // fetch("http://localhost:3000/api/createWorkspace" , requestOptions)
+          // // .then(GetAllTodos())
+          //   .then(res =>  res.body) // redundant
+          //   .then(res => {console.log(res)}) // redundant
+          //   router.push('/todos')
+        } else {
+          // join workspace
+          // fetch("http://localhost:3080/api/joinWorkspace/" + _workspaceid)
+          //   .then(res => {
+          //     res.json().then(data => { successMessage.value = data.message } )
+          //   })
+          //   .catch(err => {
+          //     err.json().then(data => { errorMessage.value = data.message } )
+          //   })
+        }
+
       } 
     }
 
@@ -611,8 +576,11 @@ export default{
               MemberNum,
               options,
               
+              //
               validateWorkspaceSelection,
               validateFileSelection,
+              workspaceOptions,
+              fileOptions,
     }
   },
   methods: {

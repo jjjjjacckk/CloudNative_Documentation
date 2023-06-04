@@ -176,7 +176,7 @@ export default {
   //   },
   // },
   components:{
-    'dropSearch': DropSearchFile,
+    'DropSearchFile': DropSearchFile,
   },
   data(){
     return{
