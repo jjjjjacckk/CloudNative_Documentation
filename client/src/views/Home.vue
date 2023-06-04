@@ -13,13 +13,6 @@
                     v-on:selected="validateFileSelection">
         </dropSearchFile>
 
-        <dropSearchTag class="form-control mb-2 mt-0" 
-                    :options="tagOptions"
-                    :disabled="false"
-                    :placeholder="'Search Tag...'"
-                    v-on:selected="validateTagSelection">
-        </dropSearchTag>
-
         <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#aboutModal">
           <i class="fa-solid fa-lightbulb" style="width:23px"></i> About
         </button>
@@ -231,7 +224,7 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title fw-bolder"><i class="fa-solid fa-file"></i>&nbsp;&nbsp;Create File</h4>
-                <button class="btn btn-close" data-bs-dismiss="modal"></button>
+                <button class="btn btn-close" data-bs-dismiss="modal" @click="selectedTag=['untagged']"></button>
               </div>
 
               <div class="modal-body">  
@@ -248,12 +241,12 @@
                 </div>
                 <div class="card-body">
                   <div class="container my-2">
-                    <dropSearch class="form-control" 
-                      :options="options"
-                      :disabled="false"
-                      :placeholder="'search for a tag...'"
-                      v-on:selected="tagSelection">
-                    </dropSearch>
+                    <dropSearchTag class="form-control mb-2 mt-0" 
+                                :options="tagOptions"
+                                :disabled="false"
+                                :placeholder="'Search Tag...'"
+                                v-on:selected="validateTagSelection">
+                    </dropSearchTag>
                     <div class="card-body mt-2">
                       <div class="list-group my-2" style="height: 20vh; overflow-y:scroll;">
                         <div v-for="(tag, idx) in selectedTag" :key="idx" class="list-group-item d-flex justify-content-between list-group-item-action"> 
@@ -338,14 +331,12 @@ export default{
     // dropsearch data
     const isOwner = ref(true);
     const MemberNum = ref(6);
-    const workspaceOptions = ref( [{name: 'jack', id: '647b4c73ad70df001ac25468'}] ); // [ {name: '', id: ''} ]
-    const tagOptions = ref( [{name: 'jack', id: '647b4c73ad70df001ac25468'}] ); // [ {name: '', id: ''} ]
-    const fileOptions = ref([{name: 'Jack', id: '647c406e69c85800134e472b'}, 
-                             {name: 'qwe', id: '647c491a95652a001a5e1aca'},
-                             {name: '123', id: '647c4d573ef8ed001383503d'}]); // [ {name: '', id: ''} ]
+    const workspaceOptions = ref([]); // [ {name: '', id: ''} ]
+    const tagOptions = ref([]); // [ {name: '', id: ''} ]
+    const fileOptions = ref([]); // [ {name: '', id: ''} ]
 
     const validateWorkspaceSelection = async(selection) => {
-      console.log(selection.name + " has been selected with wid = " + selection.id);
+      console.log('[validate Workspace Selection] ' + selection.name + " has been selected with wid = " + selection.id);
       console.log(" uid = " + uid.value + " wid = " + wid.value);
       if(selection.name != undefined) {
         if (selection.name.includes('Create')) {
@@ -368,7 +359,10 @@ export default{
           fetch("http://localhost:3080/api/createWorkspace" , requestOptions)
           // .then(GetAllTodos())
             .then(res => res.body ) // redundant
-            .then(res => {console.log(res); }) // redundant
+            .then(res => {
+              console.log(res);
+              router.go(0);
+            }) // redundant
             // router.push('/todos')
         } else {
           // join workspace
@@ -394,7 +388,7 @@ export default{
     }
 
     const validateTagSelection = async(selection) => {
-      console.log(selection.name + " has been selected with wid = " + selection.id);
+      console.log('[validate Tag Selection] ' + selection.name + " has been selected with wid = " + selection.id);
       console.log(" uid = " + uid.value + " wid = " + wid.value);
       if(selection.name != undefined) {
         var newTagName = selection.name
@@ -413,12 +407,53 @@ export default{
     }
 
     const validateFileSelection = async(selection) => {
-      console.log(selection.name + " has been selected with fid = " + selection.id);
+      console.log('[validate File Selection] ' + selection.name + " has been selected with fid = " + selection.id);
       if(selection.name != undefined) {
         // goto file edit (selection.id <- file id)
         // console.log('url = ' + '/home/' + uid.value + '/file/' + selection.id + '?wid=' + wid.value);
         router.push('/home/' + uid.value + '/file/' + selection.id + '?wid=' + wid.value);
       } 
+    }
+
+    const getWorkspaceOptions = async() => {
+      try {
+        await fetch('http://localhost:3080/api/getAllWorkspace/')
+        .then(res => res.json())
+        .then(res => {
+          for (var workspace of res.data) {
+            workspaceOptions.value.push({name: workspace.name, id: workspace._id});
+          }
+        })
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+
+    const getTagOptions = async() => {
+      try {
+        await fetch(`http://localhost:3080/api/getWorkspaceTags/${wid.value}`)
+        .then(res => res.json())
+        .then(res => {
+          for (var tag of res.data) {
+            console.log('[getTagOptions] ', tag.tag, tag._id, tagOptions.value.some(dic => dic.name == tag.tag));
+            if (!tag.tag.includes('untagged') && !tagOptions.value.some(dic => dic.name == tag.tag)) {
+              tagOptions.value.push({name: tag.tag, id: tag._id});
+            }
+          }
+        })
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+
+    const getFileOptions = async() => {
+      fileOptions.value = [];
+      for(var files of WorkspaceFiles.value) {
+        fileOptions.value.push({name: files.filename, id: files.id});
+      }
+      console.log('[getFileOptions] ', WorkspaceFiles.value, fileOptions.value)
     }
 
     // get user info 
@@ -467,11 +502,10 @@ export default{
     const WorkspaceFiles = ref([]);
     const getWorkspaceFiles = async(workspace) => {
       WorkspaceFiles.value = [];
-      for(var fid of workspace.files){
-        await getFileInfo(fid);
-        // if (!WorkspaceFiles.value.includes(fileInfo.value)) {
-        // }
-        WorkspaceFiles.value.push(fileInfo.value);
+      for(var fid of workspace.files) {
+        await getFileInfo(fid).then(targetFile => {
+          WorkspaceFiles.value.push(targetFile.value);
+        });
       }
     }
 
@@ -494,7 +528,6 @@ export default{
           fileInfo.value.filename = res.data.name;
           fileInfo.value.tag = res.data.tag;
           fileInfo.value.ownerId = res.data.owner;
-          console.log('[getFileInfo] fileInfo.value.filename = ' + fileInfo.value.filename);
           // console.log(fileInfo.value.id);
         })
         .then(()=>{
@@ -531,6 +564,11 @@ export default{
       
       currentWorkspace.value = myUserWorkspaces.value.find(element => element._id == wid.value);
       await getWorkspaceFiles(currentWorkspace.value);
+
+      // get all options
+      await getWorkspaceOptions();
+      await getTagOptions();
+      await getFileOptions();
     })
 
     // create file
@@ -557,7 +595,6 @@ export default{
           res.json().then(data => { 
             successMessage.value = data.message 
           }).then(() => { 
-            getWorkspaceFiles(currentWorkspace.value); 
             router.go(0);
           })
         })
@@ -614,8 +651,6 @@ export default{
       filename,
       selectedTag,
       createFile,
-      //
-      getOwnerInfo,
       //
       isOwner,
       MemberNum,              
