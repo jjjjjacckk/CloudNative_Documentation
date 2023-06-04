@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 const Workspace = new Schema(
     {
         name: { type: String, required: true },
-        members: { type: [mongoose.ObjectId], required: true },
+        members: { type: [mongoose.ObjectId], required: false },
         files: { type: [mongoose.ObjectId], required: false },
         tags: [{ 
             tag: { type: String, required: false },

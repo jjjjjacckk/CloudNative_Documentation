@@ -7,14 +7,14 @@ WORKDIR /usr/app
 # Copy package.json
 COPY ./package.json ./
 
-# Install React dependencies
+# Install dependencies
 RUN npm install
 
 # Copy rest of the code to container
 COPY . .
 
-# Expose 3000 port
-EXPOSE 3000
+# Expose container port
+EXPOSE 8080
 
-# Run the React application
-CMD [ "npm", "start" ]
+# Run the Vue application
+CMD [ "npm", "run", "serve" ]
