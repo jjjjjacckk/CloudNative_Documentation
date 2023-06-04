@@ -23,7 +23,7 @@
             </div>
             <div class="col-sm-12 mb-4 form-group">
               <!-- <button :disabled="user.account == '' || user.password == ''" @click.prevent="loginRequest" class="btn btn-primary btn-lg col-sm-4">登入</button> -->
-              <button :disabled="loginUser.account == '' || loginUser.password == ''" @click.prevent="checkUser()" class="btn btn-primary btn-lg col-sm-4">Login</button>
+              <button :disabled="loginUser.account == '' || loginUser.password == ''" @click.prevent="checkUser" class="btn btn-primary btn-lg col-sm-4">Login</button>
             </div>
             <div class="col-sm-12 form-group">
             <p>Don't have an account? <router-link to="/signup">Signup</router-link></p>
@@ -88,11 +88,12 @@ export default{
     const router = useRouter();
 
     const getAllUser = async() => {
+      console.log()
       try {
         await fetch("http://localhost:3080/api/getAllUsers")
         .then(res => res.json())
         .then(res => {
-          // console.log(res.data)
+          console.log(res.data)
           AllUser.value = res.data
           // debugger
         })
@@ -129,7 +130,6 @@ export default{
           }
         }
       }
-
     }
   
   

@@ -6,9 +6,13 @@
       <div class="d-flex flex-column flex-shrink-0 p-3" style="background-color:#E5E8E8; height:100vh;">
         <span class="fs-4 fw-semibold text-truncate">My Workspace</span>
         <hr style="border-color:#909497">
-        <form>
-          <input class="form-control mb-2" type="text" placeholder="Search file ..." aria-label="Search">
-        </form>
+        <dropSearchFile class="form-control mb-2 mt-0" 
+                    :options="fileOptions"
+                    :disabled="false"
+                    :placeholder="'Search file...'"
+                    v-on:selected="validateFileSelection">
+        </dropSearchFile>
+
         <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#aboutModal">
           <i class="fa-solid fa-lightbulb" style="width:23px"></i> About
         </button>
@@ -85,8 +89,8 @@
     
     <!-- all files in the group -->
     <div class="content">
-      <p>{{myUserInfo}}</p>
-      <p>{{currentWorkspace}}</p>
+      <!-- <p>{{myUserInfo}}</p>
+      <p>{{currentWorkspace}}</p> -->
       <!-- <p>{{getOwnerInfo(uid)}}</p> -->
       <!-- <p>{{WorkspaceFiles}}</p> -->
       <div class="card border-0">
@@ -202,7 +206,9 @@
               </div>
 
               <div class="modal-footer">
-                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Leave</button>
+                <button @click="leaveWorkspace" type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
+                  Leave
+                </button>
               </div>
             </div>
           </div>
@@ -218,7 +224,7 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title fw-bolder"><i class="fa-solid fa-file"></i>&nbsp;&nbsp;Create File</h4>
-                <button class="btn btn-close" data-bs-dismiss="modal"></button>
+                <button class="btn btn-close" data-bs-dismiss="modal" @click="selectedTag=['untagged']"></button>
               </div>
 
               <div class="modal-body">  
@@ -235,12 +241,12 @@
                 </div>
                 <div class="card-body">
                   <div class="container my-2">
-                    <dropSearch class="form-control" 
-                      :options="options"
-                      :disabled="false"
-                      :placeholder="'search for a tag...'"
-                      v-on:selected="tagSelection">
-                    </dropSearch>
+                    <dropSearchTag class="form-control mb-2 mt-0" 
+                                :options="tagOptions"
+                                :disabled="false"
+                                :placeholder="'Search Tag...'"
+                                v-on:selected="validateTagSelection">
+                    </dropSearchTag>
                     <div class="card-body mt-2">
                       <div class="list-group my-2" style="height: 20vh; overflow-y:scroll;">
                         <div v-for="(tag, idx) in selectedTag" :key="idx" class="list-group-item d-flex justify-content-between list-group-item-action"> 
@@ -274,64 +280,15 @@
               
               <div class="modal-body">
                 <div class="d-flex mx-2 my-2">
-                  <dropSearch class="form-control" 
-                  :options="options"
-                  :disabled="false"
-                  :placeholder="'Workspace name...'"
-                  v-on:selected="validateSelection">
-                  </dropSearch>
-                  <button class="btn btn-text-color btn-outline-dark text-nowrap my-2" @click="createWorkspaceModal=true">
+                  <dropSearchWorkspace class="form-control" 
+                              :options="workspaceOptions"
+                              :disabled="false"
+                              :placeholder="'Workspace name...'"
+                              v-on:selected="validateWorkspaceSelection">
+                  </dropSearchWorkspace>
+                  <!-- <button class="btn btn-text-color btn-outline-dark text-nowrap my-2" @click="createWorkspaceModal=true">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                  </button>
-
-                  <!--  <div class="card-body" style="height: 500px; overflow-y:scroll">
-                    <div class="table-responsive">
-                      <table class="table table-striped align-middle text-nowrap">
-                        <thead>
-                          <tr class="align-middle" style="background-color:#2c3e50; color:white">
-                            <th scope="col">比賽</th>
-                            <th scope="col">攻擊<br>得分</th>
-                            <th scope="col">攔網<br>得分</th>
-                            <th scope="col">發球<br>得分</th>
-                            <th scope="col">總得<br>分</th>
-                            <th scope="col">攻擊<br>失誤</th>
-                            <th scope="col">舉球<br>失誤</th>
-                            <th scope="col">觸網<br>失誤</th>
-                            <th scope="col">接發<br>失誤</th>
-                            <th scope="col">發球<br>失誤</th>
-                            <th scope="col">總失<br>分</th>
-                          </tr>
-                        </thead>
-                        <tbody v-if="profile.StatisticsList[0]!=''">
-                          <tr v-for="(statistic,idx) in profile.StatisticsList" :key="idx">
-                            <td>
-                              <div class="text-center">
-                                <p class="mb-0">{{statistic.contest}}</p>
-                                <p class="mb-1">{{statistic.teamName}}&nbsp;<span class="badge bg-main">vs</span>&nbsp;{{statistic.opponent}}</p>
-                                <p class="mb-0 opacity-75">{{statistic.date}}</p>
-                                <p class="mb-0 opacity-75">{{statistic.gameScore}}</p>
-                              </div>
-                            </td>
-                            <td class="border-start">{{statistic.attackPoint}}</td>
-                            <td>{{statistic.blockPoint}}</td>
-                            <td>{{statistic.servicePoint}}</td>
-                            <td class="border-start">{{statistic.attackPoint + statistic.blockPoint + statistic.servicePoint}}</td>
-                            <td class="border-start">{{statistic.attackError}}</td>
-                            <td>{{statistic.tossError}}</td>
-                            <td>{{statistic.blockError}}</td>
-                            <td>{{statistic.receiveError}}</td>
-                            <td>{{statistic.serviceError}}</td>
-                            <td class="border-start">{{statistic.attackError + statistic.tossError + statistic.blockError + statistic.receiveError + statistic.serviceError}}</td>
-                          </tr>
-                        </tbody>
-                        <tbody v-else>
-                          <tr>
-                            <td v-for="idx in 11" :key="idx"> - </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div> -->
+                  </button> -->
                 </div>
               </div>
             </div>
@@ -343,23 +300,24 @@
 </template>
 
 <script>
+import dropSearchWorkspace from '../components/dropSearchWorkspace.vue';
+import dropSearchFile from '../components/dropSearchFile.vue';
+import dropSearchTag from '../components/dropSearchTag.vue';
 import { ref, onMounted } from 'vue'
 import { useRoute , useRouter } from 'vue-router'
-import DropSearch from '../components/dropSearch.vue';
 import { booleanLiteral } from '@babel/types';
 
 export default{
   components:{
-    'dropSearch':DropSearch,
+    'dropSearchWorkspace':dropSearchWorkspace,
+    'dropSearchFile':dropSearchFile,
+    'dropSearchTag':dropSearchTag,
   },
-  // data() {
-  //   return {
-  //     isOwner: true,
-  //     MemberNum: 6,
-  //     selectedTag: ['untagged'],
-  //     options: [''],
-  //   }
-  // },
+  data() {
+    return {
+      
+    }
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -373,7 +331,130 @@ export default{
     // dropsearch data
     const isOwner = ref(true);
     const MemberNum = ref(6);
-    const options = ref(['']); //allWorkspaces: const allWorkspaces = ref([]);
+    const workspaceOptions = ref([]); // [ {name: '', id: ''} ]
+    const tagOptions = ref([]); // [ {name: '', id: ''} ]
+    const fileOptions = ref([]); // [ {name: '', id: ''} ]
+
+    const validateWorkspaceSelection = async(selection) => {
+      console.log('[validate Workspace Selection] ' + selection.name + " has been selected with wid = " + selection.id);
+      console.log(" uid = " + uid.value + " wid = " + wid.value);
+      if(selection.name != undefined) {
+        if (selection.name.includes('Create')) {
+          // create workspace
+          console.log("name = " + selection.name.substring(8));
+          var newWorkspaceName = selection.name.substring(8);
+
+          const requestOptions = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+              // "auth-token": state.token
+            },
+            body: JSON.stringify({
+              name: newWorkspaceName,
+              members: uid.value
+            }) 
+          }
+
+          fetch("http://localhost:3080/api/createWorkspace" , requestOptions)
+          // .then(GetAllTodos())
+            .then(res => res.body ) // redundant
+            .then(res => {
+              console.log(res);
+              router.go(0);
+            }) // redundant
+            // router.push('/todos')
+        } else {
+          // join workspace
+          const requestOptions = {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+              // "auth-token": state.token
+            },
+            body: JSON.stringify({
+              id: uid.value
+            }) 
+          }
+
+          fetch("http://localhost:3080/api/joinWorkspace/" + selection.id , requestOptions)
+          // .then(GetAllTodos())
+            .then(res =>  res.body) // redundant
+            .then(res => {console.log(res.data)}) // redundant
+            // router.push('/todos')
+        }
+
+      } 
+    }
+
+    const validateTagSelection = async(selection) => {
+      console.log('[validate Tag Selection] ' + selection.name + " has been selected with wid = " + selection.id);
+      console.log(" uid = " + uid.value + " wid = " + wid.value);
+      if(selection.name != undefined) {
+        var newTagName = selection.name
+        if (selection.name.includes('Create')) {
+          // Create Tag
+          console.log("name = " + selection.name.substring(8));
+          newTagName = selection.name.substring(8);
+        } 
+        
+        console.log("newTagName = " + newTagName);
+        if (selectedTag.value.includes('untagged')) 
+          selectedTag.value = []
+        selectedTag.value.push(newTagName)
+        console.log("selectedTag = " + selectedTag.value);
+      } 
+    }
+
+    const validateFileSelection = async(selection) => {
+      console.log('[validate File Selection] ' + selection.name + " has been selected with fid = " + selection.id);
+      if(selection.name != undefined) {
+        // goto file edit (selection.id <- file id)
+        // console.log('url = ' + '/home/' + uid.value + '/file/' + selection.id + '?wid=' + wid.value);
+        router.push('/home/' + uid.value + '/file/' + selection.id + '?wid=' + wid.value);
+      } 
+    }
+
+    const getWorkspaceOptions = async() => {
+      try {
+        await fetch('http://localhost:3080/api/getAllWorkspace/')
+        .then(res => res.json())
+        .then(res => {
+          for (var workspace of res.data) {
+            workspaceOptions.value.push({name: workspace.name, id: workspace._id});
+          }
+        })
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+
+    const getTagOptions = async() => {
+      try {
+        await fetch(`http://localhost:3080/api/getWorkspaceTags/${wid.value}`)
+        .then(res => res.json())
+        .then(res => {
+          for (var tag of res.data) {
+            console.log('[getTagOptions] ', tag.tag, tag._id, tagOptions.value.some(dic => dic.name == tag.tag));
+            if (!tag.tag.includes('untagged') && !tagOptions.value.some(dic => dic.name == tag.tag)) {
+              tagOptions.value.push({name: tag.tag, id: tag._id});
+            }
+          }
+        })
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+
+    const getFileOptions = async() => {
+      fileOptions.value = [];
+      for(var files of WorkspaceFiles.value) {
+        fileOptions.value.push({name: files.filename, id: files.id});
+      }
+      console.log('[getFileOptions] ', WorkspaceFiles.value, fileOptions.value)
+    }
 
     // get user info 
     const myUserInfo = ref({});
@@ -419,7 +500,15 @@ export default{
 
     // get file info
     const WorkspaceFiles = ref([]);
-    
+    const getWorkspaceFiles = async(workspace) => {
+      WorkspaceFiles.value = [];
+      for(var fid of workspace.files) {
+        await getFileInfo(fid).then(targetFile => {
+          WorkspaceFiles.value.push(targetFile.value);
+        });
+      }
+    }
+
     const getFileInfo = async(fid) => {
       const fileInfo = ref({
         id: '',
@@ -439,7 +528,6 @@ export default{
           fileInfo.value.filename = res.data.name;
           fileInfo.value.tag = res.data.tag;
           fileInfo.value.ownerId = res.data.owner;
-          console.log('[getFileInfo] fileInfo.value.filename = ' + fileInfo.value.filename);
           // console.log(fileInfo.value.id);
         })
         .then(()=>{
@@ -465,23 +553,6 @@ export default{
       }
     }
 
-    const getWorkspaceFiles = async(workspace) => {
-      WorkspaceFiles.value = [];
-      for(var fid of workspace.files){
-        var tempFileInfo;
-        await getFileInfo(fid).then(targetFile => {
-          console.log('[getWorkspaceFiles] = ');
-          console.log(targetFile.value)
-          WorkspaceFiles.value.push(targetFile.value);
-        });
-        // console.log('[getWorkspaceFiles] fid = ' + fid)
-        // console.log('[getWorkspaceFiles] fileInfo.value = ')
-        // console.log(fileInfo.value)
-        console.log('[getWorkspaceFiles] WorkspaceFiles.value = ')
-        console.log(WorkspaceFiles.value)
-      }
-    }
-
 
     // on Mounted
     onMounted(async() => {
@@ -490,22 +561,20 @@ export default{
 
       await getUserInfo();
       await getUserWorkspaces();
-      // console.log(myUserWorkspaces.value[0]);
-      // console.log(myUserWorkspaces.value[1]);
+      
       currentWorkspace.value = myUserWorkspaces.value.find(element => element._id == wid.value);
-      // console.log(currentWorkspace.value);
-
       await getWorkspaceFiles(currentWorkspace.value);
-      // console.log(WorkspaceFiles.value[0])
-      // console.log(WorkspaceFiles.value[1])
-      // console.log(WorkspaceFiles.value[2])
 
+      // get all options
+      await getWorkspaceOptions();
+      await getTagOptions();
+      await getFileOptions();
     })
 
     // create file
     const filename = ref('');
     const selectedTag = ref(['untagged']);
-    const createFile = () => { 
+    const createFile = async() => { 
 
       const requestOptions = {
         method: "POST",
@@ -526,7 +595,6 @@ export default{
           res.json().then(data => { 
             successMessage.value = data.message 
           }).then(() => { 
-            getWorkspaceFiles(currentWorkspace.value); 
             router.go(0);
           })
         })
@@ -536,36 +604,31 @@ export default{
     }
 
     // get file owner name
-    const ownerInfo = ref({
-      username: '',
-      isOwner: false,
-    });
-    // const getOwnerInfo = async(ownerId) => {
-    //   const ownerInfo = {
-    //     username: '',
-    //     isOwner: false,
-    //   };
-    //   try {
-    //     await fetch(`http://localhost:3080/api/getUserName/${ownerId}`)
-    //     .then(res => res.json())
-    //     .then(res => {
-    //       ownerInfo.username = res.data;
-    //       console.log(ownerInfo.username)
-    //       if(ownerInfo.username === myUserInfo.value.username){
-    //         ownerInfo.isOwner = true;
-    //         console.log(ownerInfo.isOwner)
-    //       }
-    //       // console.log(ownerInfo);
-    //       return ownerInfo.json();
-    //     })
-    //   }
-    //   catch(error) {
-    //     console.log(error);
-    //     return null;
-    //   }
-    // }
+    // leave workspace
+    const leaveWorkspace = async() => {
+      try {
+        const requestOptions = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+            // "auth-token": state.token
+          },
+          body: JSON.stringify({
+            id: uid.value
+          }) 
+        }
 
-    const validateSelection = () => {}
+        console.log('leave workspace');
+
+        // fetch(`http://localhost:3080/api/leaveWorkspace/${wid.value}`, requestOptions)
+        // // .then(GetAllTodos())
+        //   .then(res =>  res.body) // redundant
+        //   .then(res => {console.log(res.data)}) // redundant
+        //   router.push('/todos')
+      } catch(error) {
+        console.log(error);
+      } 
+    }
 
     return {
       errorMessage,
@@ -589,15 +652,16 @@ export default{
       selectedTag,
       createFile,
       //
-      ownerInfo,
-      // getOwnerInfo,
-
       isOwner,
-      MemberNum,
-      options,
-
-
-      validateSelection,
+      MemberNum,              
+      workspaceOptions,
+      fileOptions,
+      tagOptions,
+      validateWorkspaceSelection,
+      validateFileSelection,
+      validateTagSelection,
+      //
+      leaveWorkspace,
     }
   },
   methods: {
