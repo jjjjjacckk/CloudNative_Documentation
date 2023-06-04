@@ -38,7 +38,7 @@ createWorkspace = async (req, res) => {
         await workspace.save()
 
         return res.status(201).json({
-          data: oldUser,
+          data: workspace._id,
         })
       } catch (error) {
         console.count('error: ' + error)
@@ -143,13 +143,21 @@ joinWorkspace = async (req, res) => {
             return res.status(403).json({ message: 'failed' })
         }
 
-        workspace.members.push(uid)
-        await workspace.save()
+        var matchAcc = workspace.members.find(element => element == uid);
+        console.log(matchAcc)
+        if(matchAcc == undefined) {
+            workspace.members.push(uid)
+            await workspace.save()
+    
+            user.workspace.push(req.params.id)
+            await user.save()
+    
+            return res.status(200).json({ message: 'success' })
+        } else {
+            console.count('error: ' + 'User exists in workspace');
+            return res.status(403).json({ message: 'failed' })
+        }
 
-        user.workspace.push(req.params.id)
-        await user.save()
-
-        return res.status(200).json({ message: 'success' })
     } catch (error) {
         console.count('error: ' + error)
         return res.status(400).json({ message: 'failed' })
