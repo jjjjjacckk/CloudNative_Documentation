@@ -110,44 +110,49 @@
           </div>
         </div>
         <!-- tag 1-->
-        <div class="card-body" v-for="(tag, idx) in tagOptions.filter(i => {if (i.name == filterSelectedTag || filterSelectedTag == 'all') return i; })" :key="idx">
-          <!-- <div v-if="filterSelectedTag == tag.name">  -->
-            <!-- show tag -->
-            <div class="card-body row align-items-center">
-              <div class="col">
-                <hr class="w-100">
+        <!-- <div v-if="() => { console.log('[v-if]', WorkspaceFiles); return WorkspaceFiles.length>0;}">  -->
+        <div v-if="true"> 
+          <div class="card-body" v-for="(tag, idx) in tagOptions.filter(i => { if (i.name == filterSelectedTag || filterSelectedTag == 'all') {
+                                                                                  if (getFilteredWorkspaceFiles(i.name).length > 0) { return i; }
+                                                                                } })" :key="idx">
+            <!-- <div v-if="filterSelectedTag == tag.name">  -->
+              <!-- show tag -->
+              <div class="card-body row align-items-center">
+                <div class="col">
+                  <hr class="w-100">
+                </div>
+                <div class="col px-0">
+                  <h2 class="fw-bolder" style="color:#2c3e50;"> {{ tag.name }} </h2>
+                </div>
+                <div class="col">
+                  <hr class="w-100">
+                </div>
               </div>
-              <div class="col px-0">
-                <h2 class="fw-bolder" style="color:#2c3e50;"> {{ tag.name }} </h2>
-              </div>
-              <div class="col">
-                <hr class="w-100">
-              </div>
-            </div>
-            <!-- show files-->
-            <div class="card-body">
-              <div class="d-grid file-grid">
-                <!-- single file -->
-                <div v-for="(file, idx) in getFilteredWorkspaceFiles(tag.name)" :key="idx" class="d-flex flex-column card-body grid-item btn file-card">
-                  <!-- <div v-if="file.tag[0] == tag.name">  -->
-                  <div> 
-                    <div class="text-truncate justify-content-center align-items-center">
-                      <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold">&nbsp;&nbsp;{{file.filename}}</span>
+              <!-- show files-->
+              <div class="card-body">
+                <div class="d-grid file-grid">
+                  <!-- single file -->
+                  <div v-for="(file, idx) in getFilteredWorkspaceFiles(tag.name)" :key="idx" class="d-flex flex-column card-body grid-item btn file-card">
+                    <!-- <div v-if="file.tag[0] == tag.name">  -->
+                    <div> 
+                      <div class="text-truncate justify-content-center align-items-center">
+                        <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold">&nbsp;&nbsp;{{file.filename}}</span>
+                      </div>
+                      <div class="d-grid edit-delete-grid mt-1 justify-content-center align-items-center">
+                        <span class="card-subtitle text-nowrap" style="grid-column:2">owner: {{ file.ownername }}</span>
+                        <button v-if="file.isOwner" class="btn btn-delete" style="grid-column:3">
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                      <router-link :to="{ path: `/home/${uid}/file/${file.id}`, query: { wid: currentWorkspace._id }}" class="btn btn-edit mt-1">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                      </router-link>
                     </div>
-                    <div class="d-grid edit-delete-grid mt-1 justify-content-center align-items-center">
-                      <span class="card-subtitle text-nowrap" style="grid-column:2">owner: {{ file.ownername }}</span>
-                      <button v-if="file.isOwner" class="btn btn-delete" style="grid-column:3">
-                        <i class="fa-solid fa-trash"></i>
-                      </button>
-                    </div>
-                    <router-link :to="{ path: `/home/${uid}/file/${file.id}`, query: { wid: currentWorkspace._id }}" class="btn btn-edit mt-1">
-                      <i class="fa-solid fa-pen-to-square"></i> Edit
-                    </router-link>
                   </div>
                 </div>
               </div>
-            </div>
-          <!-- </div> -->
+            <!-- </div> -->
+          </div>
         </div>
       </div>
     </div>
@@ -345,6 +350,8 @@ export default{
               router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
 
               await getWorkspaceOptions();
+              await getTagOptions();
+              await getFileOptions();
             }) // redundant
             // router.push('/todos')
         } else {
@@ -369,11 +376,13 @@ export default{
               // console.log(myUserWorkspaces.value);       
               currentWorkspace.value = myUserWorkspaces.value.find(element => element._id == selection.id);
               await getWorkspaceFiles(currentWorkspace.value);
-              // console.log(currentWorkspace.value);       
+              console.log('[join workspace] ', WorkspaceFiles.value);       
               wid.value = currentWorkspace.value._id;
               router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
               
               await getWorkspaceOptions();
+              await getTagOptions();
+              await getFileOptions();
             }) // redundant
             // router.push('/todos')
         }
@@ -422,7 +431,7 @@ export default{
         .then(res => {
           workspaceOptions.value = [];
           for (var workspace of res.data) {
-            console.log('[getWorkspaceOptions] ', workspace.name, workspace.isPrivate, workspace.members.includes(uid.value))
+            // console.log('[getWorkspaceOptions] ', workspace.name, workspace.isPrivate, workspace.members.includes(uid.value))
             if (!workspace.isPrivate && workspace.name != 'Public' && !workspace.members.includes(uid.value))
               workspaceOptions.value.push({name: workspace.name, id: workspace._id});
           }
@@ -664,12 +673,16 @@ export default{
 
     // change workspace
     const changeWorkspace = async(idx) => {
-      console.log(myUserWorkspaces.value[idx]);
+      // console.log(myUserWorkspaces.value[idx]);
       await getUserWorkspaces();  
       currentWorkspace.value = myUserWorkspaces.value[idx];
       await getWorkspaceFiles(currentWorkspace.value);
       wid.value = currentWorkspace.value._id;
       router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
+      
+      await getWorkspaceOptions();
+      await getTagOptions();
+      await getFileOptions();
     }
 
     return {

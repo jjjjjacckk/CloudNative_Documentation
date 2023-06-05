@@ -77,7 +77,6 @@
         const regOption = new RegExp(this.searchFilter, 'ig');
 
         // initially: no options, "Create" should pop out
-        console.log('[first] ', this.options.length < 1, this.searchFilter.length > 0)
         if (this.options.length < 1 && this.searchFilter.length > 0) {
           filtered.push({name: 'Create: ' + this.searchFilter, id: 'newTag'});
         }
@@ -91,7 +90,6 @@
         }
         
         // if no match at all: add a create tag
-        console.log('[second] ', filtered.length < 1, this.searchFilter.length > 0)
         if (filtered.length < 1 && this.searchFilter.length > 0) {
           filtered.push({name: 'Create: ' + this.searchFilter, id: 'newTag'});
         }
