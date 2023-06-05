@@ -154,6 +154,7 @@ getFile = async (req, res) => {
 updateFile = async (req, res) => {
     const body = req.body;
     const file_id = body.file_id;
+    const file_name = body.file_name;
     const file_data = body.file_data;
     const file_history = body.file_history;
     // const file_id = '6478a725732d8d00131eb1cf'
@@ -171,12 +172,16 @@ updateFile = async (req, res) => {
             return res.status(404).json({ data: '' });
         }
 
+        // update file name
+        file.name = file_name;
+        await file.save();
+        
         // update file data
         file.data = file_data;
         await file.save();
 
         // update file history
-        file.history.push(...file_history);
+        file.history = file_history;
         await file.save();
 
         return res.status(200).json({ data: file });
@@ -213,7 +218,7 @@ updateSnapshot = async (req, res) => {
         file.snapshot.push(newSnapshot);
         await file.save();
 
-        return res.status(200).json({ data: file.snapshot });
+        return res.status(200).json({ data: file });
     } catch (error) {
         console.count('error: ' + error);
         return res.status(400).json({ message: 'failed' });
