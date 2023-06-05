@@ -317,8 +317,6 @@ export default{
     const fileOptions = ref([]); // [ {name: '', id: ''} ]
 
     const validateWorkspaceSelection = async(selection) => {
-      // console.log('[validate Workspace Selection] ' + selection.name + " has been selected with wid = " + selection.id);
-      // console.log(" uid = " + uid.value + " wid = " + wid.value);
       if(selection.name != undefined) {
         if (selection.name.includes('Create')) {
           // create workspace
@@ -389,12 +387,9 @@ export default{
         
         leavebtn.value.click();
       } 
-      // document.getElementById('workspaceModal').close();
     }
 
     const validateTagSelection = async(selection) => {
-      // console.log('[validate Tag Selection] ' + selection.name + " has been selected with wid = " + selection.id);
-      // console.log(" uid = " + uid.value + " wid = " + wid.value);
       if(selection.name != undefined) {
         var newTagName = selection.name
         if (selection.name.includes('Create')) {
