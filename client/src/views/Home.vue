@@ -46,16 +46,16 @@
               Private
             </button>
             <div class="collapse show list-group" id="private-collapse">
-              <button class="btn btn-text-color btn-workspace btn-block m-1" @click="changeWorkspace(0)">My workspace</button>
+              <button class="btn btn-text-color btn-workspace btn-block m-1" :class="{active: myUserInfo.username === currentWorkspace.name }" @click="changeWorkspace(0)">My workspace</button>
             </div>
           </div>
           <div class="">
-            <button class="btn btn-text-color btn-toggle align-items-center rounded collapsed d-flex justify-content-start ms-0" data-bs-toggle="collapse" data-bs-target="#public-collapse" aria-expanded="false" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';">
+            <button class="btn btn-text-color btn-toggle align-items-center rounded collapsed d-flex justify-content-start ms-0"  data-bs-toggle="collapse" data-bs-target="#public-collapse" aria-expanded="false" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';">
               <i class="fa-solid fa-globe" style="width:20px"></i>&nbsp;
               Public
             </button>
             <div class="collapse list-group" id="public-collapse">
-              <button class="btn btn-text-color btn-workspace btn-block m-1" @click="changeWorkspace(1)">Public workspace</button>
+              <button class="btn btn-text-color btn-workspace btn-block m-1" :class="{active: 'Public' === currentWorkspace.name }" @click="changeWorkspace(1)">Public workspace</button>
             </div>
           </div>
           <div class="">
@@ -66,7 +66,7 @@
             <div class="collapse" id="groups-collapse">    
               <div class="list-group text-truncate" style="height: 18vh;overflow-y: auto;" >
                 <div v-for="(workspace, idx) in myUserWorkspaces" :key="idx">
-                  <button  v-if="idx>1" class="btn btn-text-color btn-workspace btn-block m-1" style="width: 230px" @click="changeWorkspace(idx)">
+                  <button  v-if="idx>1" class="btn btn-text-color btn-workspace btn-block m-1" style="width: 230px" :class="{active: workspace.name === currentWorkspace.name }"  @click="changeWorkspace(idx)">
                     <div class="text-truncate">{{ workspace.name }}</div>
                     <!-- {{ workspace.name }} -->
                   </button>
@@ -138,9 +138,9 @@
                       <div class="text-truncate justify-content-center align-items-center">
                         <i class="fa-solid fa-file fs-4"></i><span class="fs-3 fw-semibold">&nbsp;&nbsp;{{file.filename}}</span>
                       </div>
-                      <div class="d-grid edit-delete-grid mt-1 justify-content-center align-items-center">
+                      <div class="d-grid edit-delete-grid mt-1 justify-content-center align-items-center" style="height: 37.8px">
                         <span class="card-subtitle text-nowrap" style="grid-column:2">owner: {{ file.ownername }}</span>
-                        <button v-if="file.isOwner" class="btn btn-delete" style="grid-column:3">
+                        <button v-if="file.isOwner" @click="deleteFile(file.id)" class="btn btn-delete" style="grid-column:3; " >
                           <i class="fa-solid fa-trash"></i>
                         </button>
                       </div>
@@ -176,7 +176,8 @@
                     <div v-for="(member, idx) in WorkspaceMember" :key="idx">
                       <div class="list-group-item d-flex justify-content-between list-group-item-action"> 
                         <span class="fw-bolder fs-5" style="color:#2c3e50">{{ member }}</span>
-                        <span class="badge bg-primary d-flex align-items-center my-1">Member</span>
+                        <span v-if="idx==0 && currentWorkspace.name != 'Public'" class="badge bg-success d-flex align-items-center my-1">Admin</span>
+                        <span v-else class="badge bg-primary d-flex align-items-center my-1">Member</span>
                       </div>
                     </div>
                   </div>
@@ -184,7 +185,7 @@
               </div>
 
               <div class="modal-footer">
-                <button @click="leaveWorkspace" type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
+                <button v-if="currentWorkspace.name != myUserInfo.username && currentWorkspace.name != 'Public'" @click="leaveWorkspace" type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                   Leave
                 </button>
               </div>
@@ -588,7 +589,6 @@ export default{
       }
     }
 
-
     // on Mounted
     onMounted(async() => {
       uid.value = route.params.id;
@@ -654,13 +654,15 @@ export default{
           }) 
         }
 
-        console.log('leave workspace');
+        // console.log('leave workspace');
 
-        // fetch(`http://localhost:3080/api/leaveWorkspace/${wid.value}`, requestOptions)
-        // // .then(GetAllTodos())
-        //   .then(res =>  res.body) // redundant
-        //   .then(res => {console.log(res.data)}) // redundant
-        //   router.push('/todos')
+        fetch(`http://localhost:3080/api/leaveWorkspace/${wid.value}`, requestOptions)
+        // .then(GetAllTodos())
+          .then(res =>  res.json() ) // redundant
+          .then(async(res) => {
+            // console.log(res.message);
+            await changeWorkspace(0);
+          }) // redundant
       } catch(error) {
         console.log(error);
       } 
@@ -678,6 +680,12 @@ export default{
       await getWorkspaceOptions();
       await getTagOptions();
       await getFileOptions();
+    }
+
+    // delete file
+    const deleteFile = async(fid) => {
+      fetch(`http://localhost:3080/api/deleteFile/${fid}`, { method: "DELETE"})
+        .then( router.go(0) )
     }
 
     return {
@@ -717,6 +725,7 @@ export default{
       leaveWorkspace,
       filterSelectedTag,
       changeWorkspace,
+      deleteFile,
     }
   },
   methods: {
@@ -773,10 +782,15 @@ export default{
 }
 .btn-workspace {
   background-color:#2c3e50; 
-  color:white;
+  color:white
 }
 .btn-workspace:hover {
-  background-color:#D7DBDD; 
+  background-color:#cacfd2; 
+  color:#2c3e50;
+}
+.btn-workspace.active {
+  background-color:#cacfd2; 
+  border-color:#cacfd2; 
   color:#2c3e50;
 }
 .file-card {

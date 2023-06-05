@@ -65,11 +65,11 @@ createFile = async (req, res) => {
     }
 }
 deleteFile = async (req, res) => {
-    const file_id = await File.findOne({ _id: req.params.id })
+    // const file_id = await File.findOne({ _id: req.params.id })
     //const file_id = '64789ff2f5a262001a8fb365'
 
     try {
-        const file = await File.findOne({ _id: file_id });
+        const file = await File.findOne({ _id: req.params.id });
 
         if (!file) {
             console.count('error: ' + 'File not found');
@@ -77,13 +77,13 @@ deleteFile = async (req, res) => {
         }
 
         //delete the file id from the File
-        await File.deleteOne({ _id: file_id });
+        await File.deleteOne({ _id: req.params.id });
 
         
-        const workspace = await Workspace.findOne({ files: file_id });
+        const workspace = await Workspace.findOne({ files: req.params.id });
         if (workspace) {
             //delete the file id from Workspace
-            await Workspace.updateOne({ _id: workspace._id }, { $pull: { files: file_id } });
+            await Workspace.updateOne({ _id: workspace._id }, { $pull: { files: req.params.id } });
             
             //delete tag from Workspace
             for (const tag of file.tag) {

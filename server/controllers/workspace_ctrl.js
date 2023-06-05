@@ -103,12 +103,12 @@ leaveWorkspace = async (req, res) => {
             return res.status(403).json({ message: 'failed' })
         }
 
-        if (workspace.members.pull(uid)) {
+        if (!workspace.members.pull(uid)) {
             console.count('error: ' + 'User not in workspace');
             return res.status(403).json({ message: 'failed' })
         }
 
-        if (user.workspace.pull(req.params.id)) {
+        if (!user.workspace.pull(req.params.id)) {
             console.count('error: ' + 'workspace not in user');
             return res.status(403).json({ message: 'failed' })
         }
