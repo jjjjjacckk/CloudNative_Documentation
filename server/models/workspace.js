@@ -10,6 +10,7 @@ const Workspace = new Schema(
             tag: { type: String, required: false },
             number: { type: Number, required: false },
         }],
+        isPrivate: { type: Boolean, default: false, required: false },
     },
     { timestamps: true },
 )
