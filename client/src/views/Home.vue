@@ -4,7 +4,9 @@
     <!-- <div class="col-lg-2 col-mid-3 col-sm-3 sidebar"> -->
     <div class="sidebar">
       <div class="d-flex flex-column flex-shrink-0 p-3" style="background-color:#E5E8E8; height:100vh;">
-        <span class="fs-4 fw-semibold text-truncate">{{ currentWorkspace.name }} Workspace</span>
+        <span v-if="currentWorkspace.name == myUserInfo.username" class="fs-4 fw-semibold text-truncate"> My Workspace</span>
+        <span v-else class="fs-4 fw-semibold text-truncate">{{ currentWorkspace.name }} Workspace</span>
+
         <hr style="border-color:#909497">
         <dropSearchFile class="form-control mb-2 mt-0" 
                     :options="fileOptions"
@@ -20,7 +22,7 @@
           <i class="fa-solid fa-file" style="width:23px"></i> Create File
         </button>
         <button class="btn btn-text-color mb-1 text-start" onmouseover="this.style.backgroundColor='#D7DBDD';" onmouseout="this.style.backgroundColor='#E5E8E8';" data-bs-toggle="modal" data-bs-target="#workspaceModal">
-          <i class="fa-solid fa-user-plus" style="width:23px"></i> Search Workspace
+          <i class="fa-solid fa-user-plus" style="width:23px"></i> Create / Join Workspace
         </button>
 
 
@@ -246,18 +248,23 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h4 class="modal-title">Search Workspace</h4>
+                <h4 class="modal-title" style="text-align: left;">Search Workspace</h4>
                 <button ref="leavebtn" class="btn btn-close" data-bs-dismiss="modal"></button>
               </div>
               
-              <div class="modal-body">
-                <div class="d-flex mx-2 my-2">
-                  <dropSearchWorkspace class="form-control" 
-                              :options="workspaceOptions"
-                              :disabled="false"
-                              :placeholder="'Workspace name...'"
-                              v-on:selected="validateWorkspaceSelection">
-                  </dropSearchWorkspace>
+              <div class="modal-body pt-2 pb-3 px-3">
+                <div class="d-flex flex-column mb-2 my-2">
+                  <div class="d-flex flex-column"> 
+                    <span class="ps-2 pe-0 pb-2 pt-0" style="text-align: left;"> 
+                      Select a workspace or create one. 
+                    </span>
+                    <dropSearchWorkspace class="form-control" 
+                                :options="workspaceOptions"
+                                :disabled="false"
+                                :placeholder="'Workspace name...'"
+                                v-on:selected="validateWorkspaceSelection">
+                    </dropSearchWorkspace>
+                  </div>
                   <!-- <button class="btn btn-text-color btn-outline-dark text-nowrap my-2" @click="createWorkspaceModal=true">
                     <i class="fa-solid fa-magnifying-glass"></i>
                   </button> -->
@@ -305,7 +312,7 @@ export default{
     const fileOptions = ref([]); // [ {name: '', id: ''} ]
 
     const validateWorkspaceSelection = async(selection) => {
-      console.log('[validate Workspace Selection] ' + selection.name + " has been selected with wid = " + selection.id);
+      // console.log('[validate Workspace Selection] ' + selection.name + " has been selected with wid = " + selection.id);
       // console.log(" uid = " + uid.value + " wid = " + wid.value);
       if(selection.name != undefined) {
         if (selection.name.includes('Create')) {
@@ -329,13 +336,15 @@ export default{
           // .then(GetAllTodos())
             .then(res => res.json() ) // redundant
             .then(async(res) => {
-              console.log(res.data);
+              // console.log(res.data);
               await getUserWorkspaces();              
               currentWorkspace.value = myUserWorkspaces.value.find(element => element._id == res.data);
               await getWorkspaceFiles(currentWorkspace.value);
-              console.log(currentWorkspace.value)
+              // console.log(currentWorkspace.value);
               wid.value = currentWorkspace.value._id;
               router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
+
+              await getWorkspaceOptions();
             }) // redundant
             // router.push('/todos')
         } else {
@@ -355,20 +364,20 @@ export default{
           // .then(GetAllTodos())
             .then(res =>  res.json()) // redundant
             .then(async(res) => {
-              console.log(res.message);
+              // console.log(res.message);
               await getUserWorkspaces();    
-              console.log(myUserWorkspaces.value);       
+              // console.log(myUserWorkspaces.value);       
               currentWorkspace.value = myUserWorkspaces.value.find(element => element._id == selection.id);
               await getWorkspaceFiles(currentWorkspace.value);
-              console.log(currentWorkspace.value);       
+              // console.log(currentWorkspace.value);       
               wid.value = currentWorkspace.value._id;
               router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
-              // router.go(0);
-            })
-            .then(() => {router.go(1)}) // redundant
+              
+              await getWorkspaceOptions();
+            }) // redundant
             // router.push('/todos')
         }
-
+        
         leavebtn.value.click();
       } 
       // document.getElementById('workspaceModal').close();
@@ -391,6 +400,8 @@ export default{
         selectedTag.value.push(newTagName)
         console.log("selectedTag = " + selectedTag.value);
       } 
+
+      await getTagOptions();
     }
 
     const validateFileSelection = async(selection) => {
@@ -399,6 +410,8 @@ export default{
         // goto file edit (selection.id <- file id)
         // console.log('url = ' + '/home/' + uid.value + '/file/' + selection.id + '?wid=' + wid.value);
         router.push('/home/' + uid.value + '/file/' + selection.id + '?wid=' + wid.value);
+        
+      await getFileOptions();
       } 
     }
 
@@ -407,8 +420,11 @@ export default{
         await fetch('http://localhost:3080/api/getAllWorkspace/')
         .then(res => res.json())
         .then(res => {
+          workspaceOptions.value = [];
           for (var workspace of res.data) {
-            workspaceOptions.value.push({name: workspace.name, id: workspace._id});
+            console.log('[getWorkspaceOptions] ', workspace.name, workspace.isPrivate, workspace.members.includes(uid.value))
+            if (!workspace.isPrivate && workspace.name != 'Public' && !workspace.members.includes(uid.value))
+              workspaceOptions.value.push({name: workspace.name, id: workspace._id});
           }
         })
       }
@@ -469,7 +485,7 @@ export default{
       myUserWorkspaces.value = []
       await getUserInfo();
       for(var wid of myUserInfo.value.workspace){
-        await getWorkspaceInfo(wid);
+          await getWorkspaceInfo(wid);
           myUserWorkspaces.value.push(workspaceInfo.value);
         }
       }
@@ -732,7 +748,6 @@ export default{
   },
 }
 </script>
-
 
 <style scoped>
 .sidebar {

@@ -75,13 +75,27 @@
       filteredOptions() {
         const filtered = [];
         const regOption = new RegExp(this.searchFilter, 'ig');
+
+        // initially: no options, "Create" should pop out
+        console.log('[first] ', this.options.length < 1, this.searchFilter.length > 0)
+        if (this.options.length < 1 && this.searchFilter.length > 0) {
+          filtered.push({name: 'Create: ' + this.searchFilter, id: 'newTag'});
+        }
+        
+        // if with options:
         for (const option of this.options) {
           if (this.searchFilter.length < 1 || option.name.match(regOption)){
-            if (filtered.length < this.maxItem) filtered.push(option);
-          } else if (filtered.length < 1) {
-            filtered.push({name: 'Create: ' + this.searchFilter, id: 'newWorkspace'});
-          }
+            if (filtered.length < this.maxItem) 
+            filtered.push(option);
+          } 
         }
+        
+        // if no match at all: add a create tag
+        console.log('[second] ', filtered.length < 1, this.searchFilter.length > 0)
+        if (filtered.length < 1 && this.searchFilter.length > 0) {
+          filtered.push({name: 'Create: ' + this.searchFilter, id: 'newTag'});
+        }
+
         return filtered;
       }
     },

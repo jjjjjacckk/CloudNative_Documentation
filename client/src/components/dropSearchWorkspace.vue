@@ -75,13 +75,18 @@
       filteredOptions() {
         const filtered = [];
         const regOption = new RegExp(this.searchFilter, 'ig');
+
         for (const option of this.options) {
           if (this.searchFilter.length < 1 || option.name.match(regOption)){
             if (filtered.length < this.maxItem) filtered.push(option);
-          } else if (filtered.length < 1) {
-            filtered.push({name: 'Create: ' + this.searchFilter, id: 'newWorkspace'});
-          }
+          } 
         }
+
+        // if no match at all: add a create tag
+        if (filtered.length < 1 && this.searchFilter.length > 0) {
+          filtered.push({name: 'Create: ' + this.searchFilter, id: 'newWorkspace'});
+        }
+
         return filtered;
       }
     },
