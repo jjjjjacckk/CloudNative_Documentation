@@ -72,7 +72,7 @@
                   <code-diff
                     :old-string="oldText"
                     :new-string="newText"
-                    output-format="side-by-side"/>
+                    output-format="line-by-line"/>
                 </div>
               </div>
             </div>
@@ -206,8 +206,8 @@ export default {
         .then(res => {
           fileInfo.value = res.data;
           originFileData.value = fileInfo.value.data;
-          // console.log(fileInfo.value.history.length);
           if(fileInfo.value.history.length > 0){
+            fileInfo.value.history = fileInfo.value.history.reverse();
             hasHistory.value = true;
           } 
         })
@@ -254,6 +254,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           fileInfo.value.snapshot = res.data.snapshot;
+          console.log(fileInfo.value.snapshot);
           fileInfo.value.snapshot = fileInfo.value.snapshot.reverse();
         })
         .catch(err => {
@@ -292,7 +293,7 @@ export default {
       // push history
       console.log(fileInfo.value.name);
       if(fileInfo.value.data != originFileData.value){
-        
+
         const history = {
           username: userName.value,
           time: new Date().toLocaleString(),
@@ -301,6 +302,8 @@ export default {
         }
         originFileData.value = fileInfo.value.data;
         
+        // old -> new
+        fileInfo.value.history = fileInfo.value.history.reverse();
         fileInfo.value.history.push(history);
         // console.log(fileInfo.value.history);
 
@@ -322,6 +325,7 @@ export default {
           .then(res => res.json())
           .then(res => {
             fileInfo.value = res.data;
+            // new -> old
             fileInfo.value.history = fileInfo.value.history.reverse();
             hasHistory.value = true;
           })
@@ -347,6 +351,8 @@ export default {
           .then(res => res.json())
           .then(res => {
             fileInfo.value = res.data;
+            // new -> old
+            fileInfo.value.history = fileInfo.value.history.reverse();
           })
           .catch(err => {
             err.json().then(data => { errorMessage.value = data.message } )
@@ -385,6 +391,7 @@ export default {
   },
   methods: {
     setHistoryText(olds, news, time){
+      // console.log('[setHistoryText]', olds, '|', news, '|', time, '|');
       this.oldText = olds;
       this.newText = news;
       this.currentHistory = time;
@@ -400,13 +407,13 @@ export default {
 <style scoped>
 
 .sidebutton {
-  width: 200px;
+  width: 220px;
   position: fixed;
   height:100%;
 }
 .content {
-  width: calc(100% - 200px);
-  margin-left: 200px;
+  width: calc(100% - 220px);
+  margin-left: 220px;
   height: 100%;
 }
 .btn-mode {
