@@ -23,7 +23,6 @@ const routes = [
   {
     path: '/home/:uid/file/:fid',
     name: 'file',
-    props: true,
     component: SingleFile
   }
 ]
