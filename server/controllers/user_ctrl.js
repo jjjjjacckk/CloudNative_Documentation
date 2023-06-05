@@ -30,7 +30,7 @@ createUser = async (req, res) => { // need create workspace
           return res.status(400).json({ message: 'account exist' })
         }
 
-        const workspace_input = { name: user.username, members: user._id}
+        const workspace_input = { name: user.username, members: user._id, isPrivate: true}
 
         const workspace = new Workspace(workspace_input)
 
