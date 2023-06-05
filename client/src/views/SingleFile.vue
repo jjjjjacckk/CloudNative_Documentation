@@ -61,7 +61,7 @@
             <div v-if="hasHistory" class="modal-body">
               <div class="sidebutton" style="height: 70vh; overflow-y:auto">
                 <div class="list-group text-start" style="; color:#2c3e50">
-                  <button v-for="(history, idx) in fileInfo.history" :key="idx" @click="setHistoryText(history.origin_text, history.modify_text, history.time)" class="list-group-item d-flex flex-column justify-content-between"> 
+                  <button v-for="(history, idx) in fileInfo.history" :key="idx" :class="{active: currentHistory === history.time}" @click="setHistoryText(history.origin_text, history.modify_text, history.time)" class="list-group-item d-flex flex-column justify-content-between"> 
                     <span class="fw-bolder fs-5" style="color:#2c3e50">{{ history.username}}</span>  
                     <span class="fw-bolder" style="color:#2c3e50; font-size: 14px">{{ history.time.split(", ")[0] }} - {{ history.time.split(", ")[1] }}</span> 
                   </button>
@@ -69,7 +69,6 @@
               </div>
               <div class="content border">
                 <div class="card-body" style="height: 70vh; overflow-y:auto;">
-                  <span class="fs-3">{{ currentHistory }}</span>
                   <code-diff
                     :old-string="oldText"
                     :new-string="newText"
@@ -101,7 +100,7 @@
             <div class="modal-body">
               <div class="sidebutton" style="height: 70vh; overflow-y:auto">
                 <div class="list-group text-start" style="; color:#2c3e50">
-                  <button v-for="(snapshot, idx) in fileInfo.snapshot" :key="idx" @click="setSnapshotText(snapshot.plain_text, snapshot.time)" class="list-group-item d-flex flex-column justify-content-between"> 
+                  <button v-for="(snapshot, idx) in fileInfo.snapshot" :key="idx" :class="{active: currentSnapshot === snapshot.time}" @click="setSnapshotText(snapshot.plain_text, snapshot.time)" class="list-group-item d-flex flex-column justify-content-between"> 
                     <span class="fw-bolder py-2" style="color:#2c3e50; font-size: 13px">{{ snapshot.time.split(", ")[0] }} - {{ snapshot.time.split(", ")[1]}}</span> 
                   </button>
                 </div>
@@ -109,7 +108,6 @@
               <div class="content border">
                 <div class="card border-0">
                   <div class="card-body" style="height: 70vh; overflow-y:auto;">
-                    <span class="fs-3">{{ currentSnapshot }}</span>
                     <v-md-editor v-model="snapshotText" mode="preview" :toolbar="toolbar" left-toolbar="undo redo | h bold italic strikethrough quote tagBar | ul ol table hr | link image" right-toolbar=""></v-md-editor>
                   </div>
                 </div>
@@ -292,6 +290,7 @@ export default {
     const updateFile = async() => { 
 
       // push history
+      console.log(fileInfo.value.name);
       if(fileInfo.value.data != originFileData.value){
         
         const history = {
@@ -325,6 +324,29 @@ export default {
             fileInfo.value = res.data;
             fileInfo.value.history = fileInfo.value.history.reverse();
             hasHistory.value = true;
+          })
+          .catch(err => {
+            err.json().then(data => { errorMessage.value = data.message } )
+          })
+      }else{
+        const requestOptions = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+            // "auth-token": state.token
+          },
+          body: JSON.stringify({
+            file_name:    fileInfo.value.name,
+            file_id:      fid.value,
+            file_data:    fileInfo.value.data,
+            file_history: fileInfo.value.history.reverse()
+          }),
+        }
+
+        await fetch("http://localhost:3080/api/updateFile", requestOptions)
+          .then(res => res.json())
+          .then(res => {
+            fileInfo.value = res.data;
           })
           .catch(err => {
             err.json().then(data => { errorMessage.value = data.message } )
@@ -438,7 +460,12 @@ export default {
   vertical-align: middle;
 }
 .list-group-item:hover {
-  background-color:#D7DBDD; 
+  background-color:#e5e8e8; 
   color:#2c3e50;
+}
+.list-group-item.active {
+  background-color:#e5e8e8; 
+  color:#2c3e50;
+  border-color: #e5e8e8;
 }
 </style>
