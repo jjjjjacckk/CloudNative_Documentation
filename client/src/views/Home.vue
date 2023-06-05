@@ -290,7 +290,6 @@ import dropSearchFile from '../components/dropSearchFile.vue';
 import dropSearchTag from '../components/dropSearchTag.vue';
 import { ref, onMounted } from 'vue'
 import { useRoute , useRouter } from 'vue-router'
-import { booleanLiteral } from '@babel/types';
 
 export default{
   components:{
@@ -316,6 +315,7 @@ export default{
     const workspaceOptions = ref([]); // [ {name: '', id: ''} ]
     const tagOptions = ref([]); // [ {name: '', id: ''} ]
     const fileOptions = ref([]); // [ {name: '', id: ''} ]
+    const forceUpdateTagOption = ref(0);
 
     const validateWorkspaceSelection = async(selection) => {
       if(selection.name != undefined) {
@@ -443,7 +443,9 @@ export default{
         await fetch(`http://localhost:3080/api/getWorkspaceTags/${wid.value}`)
         .then(res => res.json())
         .then(res => {
+          tagOptions.value = [{name: 'untagged', id: '-1'}];
           for (var tag of res.data) {
+            console.log('[getTagOptions] wid = ', wid.value);
             // some() = to avoid duplicate tags
             if (!tagOptions.value.some(dic => dic.name == tag.tag)) {
               tagOptions.value.push({name: tag.tag, id: tag._id});
@@ -630,7 +632,7 @@ export default{
       fetch("http://localhost:3080/api/createFile", requestOptions)
         .then(res => {
           res.json().then(data => { 
-            successMessage.value = data.message 
+            successMessage.value = data.message;
           }).then(() => { 
             router.go(0);
           })
@@ -675,11 +677,16 @@ export default{
       currentWorkspace.value = myUserWorkspaces.value[idx];
       await getWorkspaceFiles(currentWorkspace.value);
       wid.value = currentWorkspace.value._id;
-      router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
+      await router.push({path: '/home/' + uid.value, query: { wid: wid.value }});
       
+
+      console.log('[changeWorkspace] wid ', wid.value);
       await getWorkspaceOptions();
       await getTagOptions();
       await getFileOptions();
+
+      // const instance = getCurrentInstance();
+      // instance?.$forceUpdate();
     }
 
     // delete file

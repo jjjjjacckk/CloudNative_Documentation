@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const connectionString = 'mongodb://mongo:27017/cinema';
+const connectionString = 'mongodb://mongo:27017/TMD';
 
 mongoose.connect(connectionString, { useNewUrlParser: true }).catch((e) => {
   console.error('Connection error', e.message);
