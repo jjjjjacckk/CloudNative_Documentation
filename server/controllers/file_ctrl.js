@@ -13,6 +13,7 @@ createFile = async (req, res) => {
     const file_format = {  name: body.file_name,
                            tag: body.file_tags,
                            owner: body.user_id,
+                           data: ''
                     }
     
 
