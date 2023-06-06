@@ -15,7 +15,7 @@ docker-compose up
 ```
 
 
-2. Open [http://localhost:3000](http://localhost:8080) and take a look around MERN Stack sample project.
+2. Open [http://localhost:8080](http://localhost:8080) and take a look around MERN Stack sample project.
 
 3. Open [http://localhost:8081](http://localhost:8081) and take a look around MongoExpress.
 
