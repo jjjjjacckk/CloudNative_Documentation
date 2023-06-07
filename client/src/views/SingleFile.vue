@@ -59,7 +59,7 @@
             </div>
 
             <div v-if="hasHistory" class="modal-body">
-              <div class="sidebutton" style="height: 70vh; overflow-y:auto">
+              <div class="sidebutton" style="height: 65vh; overflow-y:auto">
                 <div class="list-group text-start" style="; color:#2c3e50">
                   <button v-for="(history, idx) in fileInfo.history" :key="idx" :class="{active: currentHistory === history.time}" @click="setHistoryText(history.origin_text, history.modify_text, history.time)" class="list-group-item d-flex flex-column justify-content-between"> 
                     <span class="fw-bolder fs-5" style="color:#2c3e50">{{ history.username}}</span>  
@@ -68,7 +68,7 @@
                 </div>
               </div>
               <div class="content border">
-                <div class="card-body" style="height: 70vh; overflow-y:auto;">
+                <div class="card-body" style="height: 65vh; overflow-y:auto;">
                   <code-diff
                     :old-string="oldText"
                     :new-string="newText"
@@ -98,7 +98,7 @@
             </div>
 
             <div class="modal-body">
-              <div class="sidebutton" style="height: 70vh; overflow-y:auto">
+              <div class="sidebutton" style="height: 65vh; overflow-y:auto">
                 <div class="list-group text-start" style="; color:#2c3e50">
                   <button v-for="(snapshot, idx) in fileInfo.snapshot" :key="idx" :class="{active: currentSnapshot === snapshot.time}" @click="setSnapshotText(snapshot.plain_text, snapshot.time)" class="list-group-item d-flex flex-column justify-content-between"> 
                     <span class="fw-bolder py-2" style="color:#2c3e50; font-size: 13px">{{ snapshot.time.split(", ")[0] }} - {{ snapshot.time.split(", ")[1]}}</span> 
@@ -107,7 +107,7 @@
               </div>
               <div class="content border">
                 <div class="card border-0">
-                  <div class="card-body" style="height: 70vh; overflow-y:auto;">
+                  <div class="card-body" style="height: 65vh; overflow-y:auto;">
                     <v-md-editor v-model="snapshotText" mode="preview" :toolbar="toolbar" left-toolbar="undo redo | h bold italic strikethrough quote tagBar | ul ol table hr | link image" right-toolbar=""></v-md-editor>
                   </div>
                 </div>
